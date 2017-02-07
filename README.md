@@ -1,4 +1,4 @@
-# Actionable
+# Actionable [![Build Status](https://travis-ci.org/simple-finance/actionable.svg?branch=master)](https://travis-ci.org/simple-finance/actionable)
 
 Simple and effective Ruby service objects.
 
