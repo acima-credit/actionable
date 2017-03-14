@@ -6,6 +6,7 @@ module Actionable
     context 'class' do
       it { expect(klass.model).to eq Invoice }
       it { expect(klass.actions).to eq %i{ fail_for_2 add_one add_two } }
+      it { expect(klass.method(:call)).to eq klass.method(:run) }
     end
     context 'result' do
       subject { klass.run number }
