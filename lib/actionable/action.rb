@@ -25,6 +25,8 @@ module Actionable
         instance.result
       end
 
+      alias_method :call, :run
+
       private
 
       def run_with_transaction(instance, &blk)
