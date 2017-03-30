@@ -5,8 +5,8 @@ module TestActionable
     set_model :invoice
 
     action :fail_for_2
-    action :add_one
-    action :add_two
+    step :add_one
+    step :add_two
 
     def initialize(number)
       super()
