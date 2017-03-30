@@ -1,15 +1,19 @@
+require 'set'
+
 module Actionable
   class Action
 
     class << self
 
       def actions
-        @actions ||= []
+        @actions ||= Set.new
       end
 
       def action(name)
-        actions << name.to_sym unless actions.include? name.to_sym
+        actions.add name.to_sym
       end
+
+      alias :step :action
 
       def set_model(name)
         @model_name = name.to_sym
