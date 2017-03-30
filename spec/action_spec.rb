@@ -5,7 +5,7 @@ module Actionable
     let(:klass) { TestActionable::GreatAction }
     context 'class' do
       it { expect(klass.model).to eq Invoice }
-      it { expect(klass.actions.to_a).to eq %i{ fail_for_2 add_one add_two } }
+      it { expect(klass.actions.map { |x| x.name }).to eq %i{ fail_for_2 add_one add_two } }
       it { expect(klass.method(:call)).to eq klass.method(:run) }
     end
     context 'result' do

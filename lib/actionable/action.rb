@@ -5,15 +5,17 @@ module Actionable
 
     class << self
 
-      def actions
-        @actions ||= Set.new
+      def steps
+        @steps ||= Set.new
       end
 
-      def action(name)
-        actions.add name.to_sym
+      alias :actions :steps
+
+      def step(name, options = {})
+        steps.add Steps.build(name, options)
       end
 
-      alias :step :action
+      alias :action :step
 
       def set_model(name)
         @model_name = name.to_sym
@@ -40,7 +42,7 @@ module Actionable
       end
 
       def run_without_transaction(instance, &blk)
-        raise 'No actions have been defined' unless actions.present?
+        raise 'No steps have been defined' unless steps.present?
 
         run_through_actions instance
         finalize_if_necessary instance
@@ -48,16 +50,16 @@ module Actionable
       end
 
       def run_through_actions(instance)
-        actions.each do |action|
+        steps.each do |step|
           break if instance.finished?
-          instance.send action
+          step.run instance
         end
       end
 
       def finalize_if_necessary(instance)
-        unless instance.finished?
-          instance.send(:succeed, 'Completed successfully.')
-        end
+        return if instance.finished?
+        
+        instance.send(:succeed, 'Completed successfully.')
       end
 
       def yield_on_success(instance)
@@ -75,12 +77,12 @@ module Actionable
     end
 
     def succeed(message = nil, code = :success, errors: {})
-      @result = ::Actionable::Success.new code: code, message: message, errors: errors, fixtures: fixtures
+      @result = Success.new code: code, message: message, errors: errors, fixtures: fixtures
       false
     end
 
     def fail(code, message = nil, errors = {})
-      @result = ::Actionable::Failure.new code: code, message: message, errors: errors, fixtures: fixtures
+      @result = Failure.new code: code, message: message, errors: errors, fixtures: fixtures
       false
     end
 
@@ -95,7 +97,9 @@ module Actionable
     private
 
     def fixtures
-      instance_values.select { |k, _| k != 'result' }.with_indifferent_access
+      instance_values.
+        select { |k, _| k != 'result' || k.start_with?('_') }.
+        with_indifferent_access
     end
 
   end
