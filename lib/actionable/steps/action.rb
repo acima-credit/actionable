@@ -8,7 +8,7 @@ module Actionable
 
       def run(instance)
         return if skip?(instance)
-        
+
         result = run_action instance
         instance.update_fixtures result.fixtures
         return if result.success?

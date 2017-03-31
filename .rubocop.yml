@@ -104,3 +104,6 @@ Style/MethodMissing:
 
 Style/SignalException:
   Enabled: false
+
+Style/ClassVars:
+  Enabled: false
