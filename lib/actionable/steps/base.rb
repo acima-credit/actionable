@@ -9,7 +9,19 @@ module Actionable
       end
 
       def run(_)
-        raise "you must implement run() for #{self.class.name}"
+        return if skip?(instance)
+      end
+
+      private
+
+      def skip?(instance)
+        if @options[:if]
+          !@options[:if].call(instance)
+        elsif @options[:unless]
+          @options[:unless].call(instance)
+        else
+          false
+        end
       end
     end
   end

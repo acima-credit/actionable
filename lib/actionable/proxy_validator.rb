@@ -1,6 +1,3 @@
-require 'delegate'
-require 'active_model'
-
 module Actionable
   class ProxyValidator < SimpleDelegator
     include ActiveModel::Validations

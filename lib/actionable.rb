@@ -1,5 +1,11 @@
-require 'actionable/version'
+require 'set'
+require 'delegate'
+
 require 'virtus'
+require 'active_model'
+require 'active_support/core_ext/string/inflections'
+
+require 'actionable/version'
 require 'actionable/result'
 require 'actionable/success'
 require 'actionable/failure'
