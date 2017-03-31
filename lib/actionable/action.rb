@@ -13,14 +13,20 @@ module Actionable
 
       alias action step
 
-      def transaction_model(name = :nothing)
-        @@model_name = name.to_sym
+      def set_model(name = :nothing)
+        @model_name = name.to_sym
       end
 
-      alias set_model transaction_model
+      alias set_transactional_model set_model
 
       def model
-        @@model_name ? @@model_name.to_s.camelize.constantize : nil
+        @model_name ? @model_name.to_s.camelize.constantize : nil
+      end
+
+      alias transactional_model model
+
+      def inherited(subclass)
+        subclass.set_model @model_name if @model_name
       end
 
       def run(*args, &blk)
