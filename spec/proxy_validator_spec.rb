@@ -8,13 +8,14 @@ module Actionable
       let(:options) { {} }
       it 'validates correctly' do
         expect(subject).to_not be_valid
+        mssages = ["author can't be blank", "publication_date can't be blank", "title can't be blank"]
         # Proxy
-        expect(subject.errors.full_messages.sort).to eq ["author can't be blank", "publication_date can't be blank", "title can't be blank"]
+        expect(subject.errors.full_messages.sort).to eq mssages
         expect(subject.errors['title']).to eq ["can't be blank"]
         expect(subject.errors['author']).to eq ["can't be blank"]
         expect(subject.errors['publication_date']).to eq ["can't be blank"]
         # Real
-        expect(post.errors.full_messages.sort).to eq ["author can't be blank", "publication_date can't be blank", "title can't be blank"]
+        expect(post.errors.full_messages.sort).to eq mssages
         expect(post.errors['title']).to eq ["can't be blank"]
         expect(post.errors['author']).to eq ["can't be blank"]
         expect(post.errors['publication_date']).to eq ["can't be blank"]
@@ -54,4 +55,3 @@ module Actionable
     end
   end
 end
-
