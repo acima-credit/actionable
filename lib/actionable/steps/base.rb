@@ -1,7 +1,6 @@
 module Actionable
   class Steps
     class Base
-
       attr_reader :name, :options
 
       def initialize(name, options = {})
@@ -12,7 +11,6 @@ module Actionable
       def run(_)
         raise "you must implement run() for #{self.class.name}"
       end
-
     end
   end
 end

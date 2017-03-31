@@ -2,36 +2,36 @@ require 'set'
 
 module Actionable
   class Action
-
     class << self
-
       def steps
         @steps ||= Set.new
       end
 
-      alias :actions :steps
+      alias actions steps
 
       def step(name, options = {})
         steps.add Steps.build(name, options)
       end
 
-      alias :action :step
+      alias action step
 
-      def set_model(name)
+      def transaction_model(name)
         @model_name = name.to_sym
       end
+
+      alias set_model transaction_model
 
       def model
         @model_name.present? ? @model_name.to_s.camelize.constantize : nil
       end
 
       def run(*args, &blk)
-        instance = new *args
+        instance = new(*args)
         run_with_transaction(instance, &blk) || run_without_transaction(instance, &blk)
         instance.result
       end
 
-      alias_method :call, :run
+      alias call run
 
       def action_name
         name.underscore
@@ -71,7 +71,6 @@ module Actionable
 
         yield instance.result
       end
-
     end
 
     attr_reader :result
@@ -104,9 +103,8 @@ module Actionable
         with_indifferent_access
     end
 
-    def set_fixtures(fields = {})
+    def update_fixtures(fields = {})
       fields.each { |k, v| instance_variable_set "@#{k}", v }
     end
-
   end
 end

@@ -3,7 +3,6 @@ require 'active_model'
 
 module Actionable
   class ProxyValidator < SimpleDelegator
-
     include ActiveModel::Validations
 
     def self.valid?(instance)
@@ -15,6 +14,5 @@ module Actionable
     def errors
       __getobj__.errors
     end
-
   end
 end

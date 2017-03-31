@@ -1,7 +1,5 @@
 module TestActionable
-
   class GreatAction < Actionable::Action
-
     set_model :invoice
 
     action :fail_for_2
@@ -24,11 +22,9 @@ module TestActionable
     def add_two
       @number += 2
     end
-
   end
 
   class SmallAction < Actionable::Action
-
     set_model :invoice
 
     step :fail_on_six
@@ -40,17 +36,15 @@ module TestActionable
     end
 
     def fail_on_six
-      fail :bad_number, 'Six is always wrong', { a: 1 } if @number == 6
+      fail :bad_number, 'Six is always wrong', a: 1 if @number == 6
     end
 
     def add_three
       @number += 3
     end
-
   end
 
   class ComposedAction < Actionable::Action
-
     set_model :invoice
 
     step SmallAction, params: [:number]
@@ -62,17 +56,15 @@ module TestActionable
     end
 
     def fail_on_six
-      fail :bad_number, 'Six is always wrong', { a: 1 } if @number == 6
+      fail :bad_number, 'Six is always wrong', a: 1 if @number == 6
     end
 
     def add_five
       @number += 5
     end
-
   end
 
   class OverComposedAction < Actionable::Action
-
     set_model :invoice
 
     step :add_five
@@ -91,7 +83,6 @@ module TestActionable
     def add_ten
       @number += 10
     end
-
   end
 
   class Post
@@ -109,7 +100,7 @@ module TestActionable
       send(attr)
     end
 
-    def self.human_attribute_name(attr, options = {})
+    def self.human_attribute_name(attr, _options = {})
       attr
     end
 
@@ -123,5 +114,4 @@ module TestActionable
     validates :author, presence: true
     validates :publication_date, presence: true
   end
-
 end

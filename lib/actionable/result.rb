@@ -1,6 +1,5 @@
 module Actionable
   class Result
-
     include Virtus.value_object
 
     attribute :code, Symbol, default: :default_code
@@ -16,13 +15,13 @@ module Actionable
       code == :success
     end
 
-    alias :successful? :success?
+    alias successful? success?
 
     def failure?
       !success?
     end
 
-    alias :failed? :failure?
+    alias failed? failure?
 
     def errors=(value)
       value = value.with_indifferent_access if value.respond_to?(:with_indifferent_access)
@@ -34,15 +33,15 @@ module Actionable
     end
 
     def to_s
-      "#<#{self.class.name} " +
-        "code=#{code.inspect}, " +
-        "message=#{message.inspect}, " +
-        "errors=#{errors.inspect}, " +
-        "fixtures=#{fixtures.keys.sort.inspect}" +
+      "#<#{self.class.name} " \
+        "code=#{code.inspect}, " \
+        "message=#{message.inspect}, " \
+        "errors=#{errors.inspect}, " \
+        "fixtures=#{fixtures.keys.sort.inspect}" \
         '>'
     end
 
-    alias :inspect :to_s
+    alias inspect to_s
 
     def respond_to?(method, include_private = false)
       (fixtures && fixtures.key?(method)) || super
@@ -53,6 +52,5 @@ module Actionable
 
       fixtures[method]
     end
-
   end
 end
