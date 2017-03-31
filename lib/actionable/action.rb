@@ -1,5 +1,3 @@
-require 'set'
-
 module Actionable
   class Action
     class << self
@@ -15,14 +13,14 @@ module Actionable
 
       alias action step
 
-      def transaction_model(name)
-        @model_name = name.to_sym
+      def transaction_model(name = :nothing)
+        @@model_name = name.to_sym
       end
 
       alias set_model transaction_model
 
       def model
-        @model_name.present? ? @model_name.to_s.camelize.constantize : nil
+        @@model_name ? @@model_name.to_s.camelize.constantize : nil
       end
 
       def run(*args, &blk)

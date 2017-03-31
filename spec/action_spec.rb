@@ -78,5 +78,17 @@ module Actionable
         end
       end
     end
+    context 'conditional' do
+      let(:klass) { TestActionable::ConditionalAction }
+      subject { klass.run number }
+      context 'if' do
+        let(:number) { 1 }
+        it { expect(subject.number).to eq 5 }
+      end
+      context 'unless' do
+        let(:number) { 3 }
+        it { expect(subject.number).to eq 3 }
+      end
+    end
   end
 end
