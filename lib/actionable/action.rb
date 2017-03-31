@@ -62,7 +62,7 @@ module Actionable
 
       def finalize_if_necessary(instance)
         return if instance.finished?
-        
+
         instance.send(:succeed, 'Completed successfully.')
       end
 
@@ -98,12 +98,14 @@ module Actionable
       raise 'You should define your own run method!'
     end
 
-    private
-
     def fixtures
       instance_values.
         select { |k, _| k != 'result' || k.start_with?('_') }.
         with_indifferent_access
+    end
+
+    def set_fixtures(fields = {})
+      fields.each { |k, v| instance_variable_set "@#{k}", v }
     end
 
   end

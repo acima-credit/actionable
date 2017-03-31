@@ -27,6 +27,73 @@ module TestActionable
 
   end
 
+  class SmallAction < Actionable::Action
+
+    set_model :invoice
+
+    step :fail_on_six
+    step :add_three
+
+    def initialize(number)
+      super()
+      @number = number
+    end
+
+    def fail_on_six
+      fail :bad_number, 'Six is always wrong', { a: 1 } if @number == 6
+    end
+
+    def add_three
+      @number += 3
+    end
+
+  end
+
+  class ComposedAction < Actionable::Action
+
+    set_model :invoice
+
+    step SmallAction, params: [:number]
+    step :add_five
+
+    def initialize(number)
+      super()
+      @number = number
+    end
+
+    def fail_on_six
+      fail :bad_number, 'Six is always wrong', { a: 1 } if @number == 6
+    end
+
+    def add_five
+      @number += 5
+    end
+
+  end
+
+  class OverComposedAction < Actionable::Action
+
+    set_model :invoice
+
+    step :add_five
+    step ComposedAction, params: [:number]
+    step :add_ten
+
+    def initialize(number)
+      super()
+      @number = number
+    end
+
+    def add_five
+      @number += 5
+    end
+
+    def add_ten
+      @number += 10
+    end
+
+  end
+
   class Post
     extend ActiveModel::Naming
 
