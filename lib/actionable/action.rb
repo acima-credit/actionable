@@ -33,6 +33,10 @@ module Actionable
 
       alias_method :call, :run
 
+      def action_name
+        name.underscore
+      end
+
       private
 
       def run_with_transaction(instance, &blk)

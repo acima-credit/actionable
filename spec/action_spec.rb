@@ -7,6 +7,7 @@ module Actionable
       it { expect(klass.model).to eq Invoice }
       it { expect(klass.actions.map { |x| x.name }).to eq %i{ fail_for_2 add_one add_two } }
       it { expect(klass.method(:call)).to eq klass.method(:run) }
+      it { expect(klass.action_name).to eq 'test_actionable/great_action' }
     end
     context 'result' do
       subject { klass.run number }
