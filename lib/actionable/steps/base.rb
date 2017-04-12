@@ -16,11 +16,19 @@ module Actionable
 
       def skip?(instance)
         if @options[:if]
-          !@options[:if].call(instance)
+          !run_condition(instance, @options[:if])
         elsif @options[:unless]
-          @options[:unless].call(instance)
+          !!run_condition(instance, @options[:unless])
         else
           false
+        end
+      end
+
+      def run_condition(instance, condition)
+        if condition.is_a? Symbol
+          instance.send condition
+        else
+          condition.call instance
         end
       end
     end
