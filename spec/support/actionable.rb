@@ -66,7 +66,11 @@ module TestActionable
 
   class ConditionalAction < BaseAction
     step :add_one, if: lambda { |x| x.number == 1 }
-    step :add_three, unless: lambda { |x| x.number == 3 }
+    step :add_three, unless: :is_three
+
+    def is_three
+      number == 3
+    end
   end
 
   class Post
