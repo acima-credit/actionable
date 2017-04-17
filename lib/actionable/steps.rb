@@ -1,6 +1,7 @@
 require 'actionable/steps/base'
 require 'actionable/steps/method'
 require 'actionable/steps/action'
+require 'actionable/steps/case'
 
 module Actionable
   class Steps

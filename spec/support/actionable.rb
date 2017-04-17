@@ -48,6 +48,10 @@ module TestActionable
     step :add_two
   end
 
+  class AddTwo < BaseAction
+    step :add_two
+  end
+
   class SmallAction < BaseAction
     action :fail_on_six
     action :add_three
@@ -70,6 +74,14 @@ module TestActionable
 
     def is_three
       number == 3
+    end
+  end
+
+  class CaseAction < BaseAction
+    case_step :number do
+      on 1, :add_one
+      on 2, TestActionable::AddTwo, params: [:number]
+      default :add_three
     end
   end
 
