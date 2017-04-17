@@ -42,7 +42,7 @@ module Actionable
         when Regexp
           value.to_s.match case_value
         when Array
-          case_value.any? { |x| value_cmp value, x }
+          case_value.any? { |x| value.to_s == x.to_s }
         else
           value.to_s == case_value.to_s
         end
