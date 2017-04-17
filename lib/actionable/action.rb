@@ -13,6 +13,12 @@ module Actionable
 
       alias action step
 
+      def case_step(name, options = {}, &blk)
+        steps.add Steps::Case.new(name, options, &blk)
+      end
+
+      alias case_action case_step
+
       def set_model(name = :nothing)
         @model_name = name.to_sym
       end

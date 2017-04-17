@@ -36,7 +36,7 @@ module Actionable
         @klass = klass
         get_result_or_exception
 
-        @matched = [:success, :failure, :exception].all? do |name|
+        @matched = %i[success failure exception].all? do |name|
           send("passes_#{name}").tap do |passed|
             @failed_name = name unless passed
           end
