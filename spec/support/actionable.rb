@@ -107,11 +107,31 @@ module TestActionable
     def self.lookup_ancestors
       [self]
     end
+
+    def self.extra
+      true
+    end
   end
 
   class PostValidator < Actionable::ProxyValidator
     validates :title, presence: true
     validates :author, presence: true
     validates :publication_date, presence: true
+  end
+
+  class BadPost
+    attr_reader :options
+
+    def initialize(options = {})
+      @options = options
+    end
+
+    def self.extra
+      false
+    end
+  end
+
+  class WrongPostValidator < Actionable::ProxyValidator
+    set_model BadPost
   end
 end

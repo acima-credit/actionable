@@ -2,8 +2,11 @@ require 'spec_helper'
 
 module Actionable
   describe ProxyValidator, actionable: true do
-    let(:post) { TestActionable::Post.new options }
-    subject { TestActionable::PostValidator.new post }
+    let(:model) { TestActionable::Post }
+    let(:validator) { TestActionable::PostValidator }
+    let(:options) { { title: 'My Title' } }
+    let(:post) { model.new options }
+    subject { validator.new post }
     context 'empty' do
       let(:options) { {} }
       it 'validates correctly' do
@@ -51,6 +54,18 @@ module Actionable
         expect(post.errors['title']).to eq []
         expect(post.errors['author']).to eq []
         expect(post.errors['publication_date']).to eq []
+      end
+    end
+    context 'class' do
+      context 'default' do
+        it('has a model') { expect(validator.model).to eq model }
+        it('forwards model class methods') { expect(validator.extra).to eq true }
+      end
+      context 'custom' do
+        let(:model) { TestActionable::BadPost }
+        let(:validator) { TestActionable::WrongPostValidator }
+        it('has a model') { expect(validator.model).to eq model }
+        it('forwards model class methods') { expect(validator.extra).to eq false }
       end
     end
   end
