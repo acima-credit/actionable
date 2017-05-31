@@ -3,7 +3,7 @@ require 'spec_helper'
 module Actionable
   module RspecMatchers
     describe PerformActionableMatcher, type: :matchers do
-      class SuccessExample < Action
+      class SuccessWithMessageExample < Action
         action :succeed_always
 
         def initialize(name)
@@ -13,6 +13,18 @@ module Actionable
 
         def succeed_always
           succeed 'I win!'
+        end
+      end
+      class SuccessNoMessageExample < Action
+        action :nothing_special
+
+        def initialize(name)
+          super()
+          @name = name
+        end
+
+        def nothing_special
+          @ok = true
         end
       end
       class FailureExample < Action
@@ -46,7 +58,7 @@ module Actionable
         subject.failure_message
       end
       describe 'actual success' do
-        let(:klass) { SuccessExample }
+        let(:klass) { SuccessWithMessageExample }
         context 'expected success with right message' do
           subject { described_class.new(name).and_succeed('I win!') }
           let(:message) { '' }
@@ -57,7 +69,7 @@ module Actionable
           subject { described_class.new(name).and_succeed('I always win!') }
           let(:message) do
             <<-MSG.unindent.chomp
-              expected Actionable::RspecMatchers::SuccessExample to run with ["someone"]
+              expected Actionable::RspecMatchers::SuccessWithMessageExample to run with ["someone"]
                 and although it succeeded
                 the message was "I win!" instead of "I always win!"
             MSG
@@ -65,17 +77,11 @@ module Actionable
           it('matches') { expect(matched).to be_falsey }
           it('tells  ') { expect(failure_message).to eq message }
         end
-        context 'expected success with no message' do
-          subject { described_class.new(name).and_succeed }
-          let(:message) { '' }
-          it('matches') { expect(matched).to be_truthy }
-          it('tells  ') { expect(failure_message).to eq message }
-        end
         context 'expected failure' do
           subject { described_class.new(name).and_fail(:my_bad, 'I failed!') }
           let(:message) do
             <<-MSG.unindent.chomp
-              expected Actionable::RspecMatchers::SuccessExample to run with ["someone"]
+              expected Actionable::RspecMatchers::SuccessWithMessageExample to run with ["someone"]
                 and fail with code :my_bad and message "I failed!"
                 but it succeeded with "I win!"
             MSG
@@ -87,12 +93,19 @@ module Actionable
           subject { described_class.new(name).and_raise(StandardError, 'something went wrong') }
           let(:message) do
             <<-MSG.unindent.chomp
-              expected Actionable::RspecMatchers::SuccessExample to run with ["someone"]
+              expected Actionable::RspecMatchers::SuccessWithMessageExample to run with ["someone"]
                 and throw a StandardError exception with message "something went wrong"
                 but no exception was raised
             MSG
           end
           it('matches') { expect(matched).to be_falsey }
+          it('tells  ') { expect(failure_message).to eq message }
+        end
+        context 'expected success with no message' do
+          let(:klass) { SuccessNoMessageExample }
+          subject { described_class.new(name).and_succeed }
+          let(:message) { '' }
+          it('matches') { expect(matched).to be_truthy }
           it('tells  ') { expect(failure_message).to eq message }
         end
       end
@@ -174,13 +187,29 @@ module Actionable
       end
       describe 'actual exception' do
         let(:klass) { ExceptionExample }
-        context 'expected success' do
+        context 'expected success with message' do
           subject { described_class.new(name).and_succeed('I win!') }
           let(:message) do
             <<-MSG.unindent.chomp
               expected Actionable::RspecMatchers::ExceptionExample to run with ["someone"]
                 and succeed with message "I win!"
-                but a StandardError exception with message "something went wrong" was raised
+                but a StandardError exception was raised
+                  with message "something went wrong"
+                  in matchers_spec.rb:51 in raise_always
+            MSG
+          end
+          it('matches') { expect(matched).to be_falsey }
+          it('tells  ') { expect(failure_message).to eq message }
+        end
+        context 'expected success with no message' do
+          subject { described_class.new(name).and_succeed }
+          let(:message) do
+            <<-MSG.unindent.chomp
+              expected Actionable::RspecMatchers::ExceptionExample to run with ["someone"]
+                and succeed with message "Completed successfully."
+                but a StandardError exception was raised
+                  with message "something went wrong"
+                  in matchers_spec.rb:51 in raise_always
             MSG
           end
           it('matches') { expect(matched).to be_falsey }
@@ -192,7 +221,9 @@ module Actionable
             <<-MSG.unindent.chomp
               expected Actionable::RspecMatchers::ExceptionExample to run with ["someone"]
                 and fail with code :my_bad and message "I failed!"
-                but a StandardError exception with message "something went wrong" was raised
+                but a StandardError exception was raised
+                  with message "something went wrong"
+                  in matchers_spec.rb:51 in raise_always
             MSG
           end
           it('matches') { expect(matched).to be_falsey }
@@ -217,7 +248,8 @@ module Actionable
               expected Actionable::RspecMatchers::ExceptionExample to run with ["someone"]
                 and throw a Exception exception with message "something went wrong"
                 and although an exception was raised
-                the class was StandardError
+                  the class was StandardError
+                  in matchers_spec.rb:51 in raise_always
             MSG
           end
           it('matches') { expect(matched).to be_falsey }
@@ -230,7 +262,8 @@ module Actionable
               expected Actionable::RspecMatchers::ExceptionExample to run with ["someone"]
                 and throw a StandardError exception with message "oh oh"
                 and although an exception was raised
-                the message was "something went wrong"
+                  the message was "something went wrong"
+                  in matchers_spec.rb:51 in raise_always
             MSG
           end
           it('matches') { expect(matched).to be_falsey }
@@ -243,8 +276,9 @@ module Actionable
               expected Actionable::RspecMatchers::ExceptionExample to run with ["someone"]
                 and throw a Exception exception with message "oh oh"
                 and although an exception was raised
-                the class was StandardError
-                the message was "something went wrong"
+                  the class was StandardError
+                  the message was "something went wrong"
+                  in matchers_spec.rb:51 in raise_always
             MSG
           end
           it('matches') { expect(matched).to be_falsey }

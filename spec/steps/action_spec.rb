@@ -4,7 +4,7 @@ module Actionable
   class Steps
     describe Action do
       let(:klass) { TestActionable::SmallAction }
-      let(:options) { { params: %i[number] } }
+      let(:options) { { params: %i(number) } }
       subject { described_class.new klass, options }
       it('name   ') { expect(subject.name).to eq 'test_actionable/small_action' }
       it('options') { expect(subject.options).to eq options }
