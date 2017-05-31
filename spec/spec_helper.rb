@@ -6,6 +6,9 @@ require 'actionable/rspec/matchers'
 require 'actionable/proxy_validator'
 require 'support/actionable'
 
+ENV['ACTIONABLE_BACKTRACE_QTY']   ||= '3'
+ENV['ACTIONABLE_SHORT_BACKTRACE'] ||= 'true'
+
 RSpec.configure do |config|
   config.example_status_persistence_file_path = '.rspec_status'
 

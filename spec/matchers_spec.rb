@@ -195,7 +195,10 @@ module Actionable
                 and succeed with message "I win!"
                 but a StandardError exception was raised
                   with message "something went wrong"
-                  in matchers_spec.rb:51 in raise_always
+                  with backtrace:
+                    matchers_spec.rb:51 in `raise_always'
+                    method.rb:7 in `run'
+                    action.rb:69 in `block in run_through_actions'
             MSG
           end
           it('matches') { expect(matched).to be_falsey }
@@ -209,7 +212,10 @@ module Actionable
                 and succeed with message "Completed successfully."
                 but a StandardError exception was raised
                   with message "something went wrong"
-                  in matchers_spec.rb:51 in raise_always
+                  with backtrace:
+                    matchers_spec.rb:51 in `raise_always'
+                    method.rb:7 in `run'
+                    action.rb:69 in `block in run_through_actions'
             MSG
           end
           it('matches') { expect(matched).to be_falsey }
@@ -223,7 +229,10 @@ module Actionable
                 and fail with code :my_bad and message "I failed!"
                 but a StandardError exception was raised
                   with message "something went wrong"
-                  in matchers_spec.rb:51 in raise_always
+                  with backtrace:
+                    matchers_spec.rb:51 in `raise_always'
+                    method.rb:7 in `run'
+                    action.rb:69 in `block in run_through_actions'
             MSG
           end
           it('matches') { expect(matched).to be_falsey }
@@ -249,7 +258,10 @@ module Actionable
                 and throw a Exception exception with message "something went wrong"
                 and although an exception was raised
                   the class was StandardError
-                  in matchers_spec.rb:51 in raise_always
+                  with backtrace:
+                    matchers_spec.rb:51 in `raise_always'
+                    method.rb:7 in `run'
+                    action.rb:69 in `block in run_through_actions'
             MSG
           end
           it('matches') { expect(matched).to be_falsey }
@@ -263,7 +275,10 @@ module Actionable
                 and throw a StandardError exception with message "oh oh"
                 and although an exception was raised
                   the message was "something went wrong"
-                  in matchers_spec.rb:51 in raise_always
+                  with backtrace:
+                    matchers_spec.rb:51 in `raise_always'
+                    method.rb:7 in `run'
+                    action.rb:69 in `block in run_through_actions'
             MSG
           end
           it('matches') { expect(matched).to be_falsey }
@@ -278,7 +293,10 @@ module Actionable
                 and although an exception was raised
                   the class was StandardError
                   the message was "something went wrong"
-                  in matchers_spec.rb:51 in raise_always
+                  with backtrace:
+                    matchers_spec.rb:51 in `raise_always'
+                    method.rb:7 in `run'
+                    action.rb:69 in `block in run_through_actions'
             MSG
           end
           it('matches') { expect(matched).to be_falsey }
