@@ -7,24 +7,27 @@ module Actionable
     end
 
     class PerformActionableMatcher
-      attr_reader :matched, :failed_name
+      attr_reader :type, :matched
 
       def initialize(*args)
         @args = args
       end
 
-      def and_succeed(message = nil)
+      def and_succeed(message = Action::DEFAULT_SUCCESS_MESSAGE)
+        @type      = :success
         @s_message = message
         self
       end
 
       def and_fail(code, message = nil)
+        @type      = :failure
         @f_code    = code
         @f_message = message
         self
       end
 
       def and_raise(klass, message = nil)
+        @type      = :exception
         @e_klass   = klass
         @e_message = message
         self
@@ -36,10 +39,15 @@ module Actionable
         @klass = klass
         get_result_or_exception
 
-        @matched = %i[success failure exception].all? do |name|
-          send("passes_#{name}").tap do |passed|
-            @failed_name = name unless passed
-          end
+        case @type
+        when :success
+          @matched = passes_success
+        when :failure
+          @matched = passes_failure
+        when :exception
+          @matched = passes_exception
+        else
+          raise "Unknown test type [#{@type}]"
         end
 
         yield result, exception if @matched && block_given?
@@ -63,36 +71,36 @@ module Actionable
         @result    = nil
         @exception = e
       end
+
       # rubocop:enable Lint/RescueException
 
       def passes_success
-        return true unless @s_message
+        @result.present? && @result.success? && pass_success_message
+      end
 
-        @result.present? &&
-          @result.success? &&
-          @result.message.to_s == @s_message.to_s
+      def pass_success_message
+        @result.message.to_s == @s_message.to_s
       end
 
       def passes_failure
-        return true unless @f_code
+        @result.present? && @result.failure? && @result.code == @f_code && pass_failure_message
+      end
 
-        @result.present? &&
-          @result.failure? &&
-          @result.code == @f_code &&
-          (@f_message.present? ? (@result.message.to_s == @f_message.to_s) : true)
+      def pass_failure_message
+        (@f_message.present? ? (@result.message.to_s == @f_message.to_s) : true)
       end
 
       def passes_exception
-        return true unless @e_klass
+        @exception.present? && @exception.class == @e_klass && pass_exception_message
+      end
 
-        @exception.present? &&
-          @exception.class == @e_klass &&
-          (@e_message.present? ? (@exception.message == @e_message) : true)
+      def pass_exception_message
+        (@e_message.present? ? (@exception.message == @e_message) : true)
       end
 
       def failure_messages
         messages = ["expected #{klass.name} to run with #{args.inspect}"]
-        case failed_name
+        case type
         when :success
           messages << failure_messages_for_success
         when :failure
@@ -107,7 +115,9 @@ module Actionable
         messages = []
         if @exception.present?
           messages << "and succeed with message #{@s_message.inspect}"
-          messages << "but a #{@exception.class.name} exception with message #{@exception.message.inspect} was raised"
+          messages << "but a #{@exception.class.name} exception was raised"
+          messages << "  with message #{@exception.message.inspect}"
+          messages << "  in #{backtrace_line(@exception)}"
         else
           failure_messages_for_success_no_exception(messages)
         end
@@ -130,11 +140,21 @@ module Actionable
         messages = []
         if @exception.present?
           messages << "and fail with code :#{@f_code} and message #{@f_message.inspect}"
-          messages << "but a #{@exception.class.name} exception with message #{@exception.message.inspect} was raised"
+          messages << "but a #{@exception.class.name} exception was raised"
+          messages << "  with message #{@exception.message.inspect}"
+          messages << "  in #{backtrace_line(@exception)}"
         else
           failure_messages_for_failure_no_exception(messages)
         end
         messages
+      end
+
+      def backtrace_line(e)
+        line  = e.backtrace.first.to_s
+        match = line.match(/(.*):(.*):in `(.*)'/i)
+        return 'missing' unless match
+
+        format '%s:%i in %s', match[1].split('/').last, match[2], match[3]
       end
 
       def failure_messages_for_failure_no_exception(messages)
@@ -159,10 +179,11 @@ module Actionable
           messages << 'but no exception was raised'
         else
           messages << 'and although an exception was raised'
-          messages << "the class was #{@exception.class.name}" if @exception.class.name != @e_klass.name
+          messages << "  the class was #{@exception.class.name}" if @exception.class.name != @e_klass.name
           if @e_message.present? && @exception.message != @e_message
-            messages << "the message was #{@exception.message.inspect}"
+            messages << "  the message was #{@exception.message.inspect}"
           end
+          messages << "  in #{backtrace_line(@exception)}"
         end
         messages
       end

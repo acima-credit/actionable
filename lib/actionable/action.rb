@@ -73,7 +73,7 @@ module Actionable
       def finalize_if_necessary(instance)
         return if instance.finished?
 
-        instance.send(:succeed, 'Completed successfully.')
+        instance.send(:succeed)
       end
 
       def yield_on_success(instance)
@@ -89,7 +89,9 @@ module Actionable
       @result = nil
     end
 
-    def succeed(message = nil, code = :success, errors: {})
+    DEFAULT_SUCCESS_MESSAGE = 'Completed successfully.'.freeze
+
+    def succeed(message = DEFAULT_SUCCESS_MESSAGE, code = :success, errors: {})
       @result = Success.new code: code, message: message, errors: errors, fixtures: fixtures
       false
     end
