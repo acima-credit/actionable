@@ -117,7 +117,7 @@ module Actionable
           messages << "and succeed with message #{@s_message.inspect}"
           messages << "but a #{@exception.class.name} exception was raised"
           messages << "  with message #{@exception.message.inspect}"
-          messages << "  in #{backtrace_line(@exception)}"
+          add_backtrace_lines messages
         else
           failure_messages_for_success_no_exception(messages)
         end
@@ -142,19 +142,30 @@ module Actionable
           messages << "and fail with code :#{@f_code} and message #{@f_message.inspect}"
           messages << "but a #{@exception.class.name} exception was raised"
           messages << "  with message #{@exception.message.inspect}"
-          messages << "  in #{backtrace_line(@exception)}"
+          add_backtrace_lines messages
         else
           failure_messages_for_failure_no_exception(messages)
         end
         messages
       end
 
-      def backtrace_line(e)
-        line  = e.backtrace.first.to_s
-        match = line.match(/(.*):(.*):in `(.*)'/i)
-        return 'missing' unless match
+      def add_backtrace_lines(msgs)
+        qty = ENV.fetch('ACTIONABLE_BACKTRACE_QTY', 5).to_i
+        msgs << '  with backtrace:'
+        @exception.backtrace[0, qty].each do |line|
+          line = format_backtrace_line line
+          msgs << line if line.present?
+        end
+      end
 
-        format '%s:%i in %s', match[1].split('/').last, match[2], match[3]
+      def format_backtrace_line(line)
+        line  = line.to_s.strip
+        match = line.match(/(.*):(.*):in `(.*)'/i)
+        return nil unless match.present?
+
+        short = ENV.fetch('ACTIONABLE_SHORT_BACKTRACE', 'false') == 'true'
+        path  = short ? match[1].split('/').last : match[1]
+        format %[    %s:%i in `%s'], path, match[2], match[3]
       end
 
       def failure_messages_for_failure_no_exception(messages)
@@ -171,8 +182,8 @@ module Actionable
       end
 
       def failure_messages_for_exception
-        msg = "and throw a #{@e_klass} exception"
-        msg += " with message #{@e_message.inspect}" if @e_message.present?
+        msg      = "and throw a #{@e_klass} exception"
+        msg      += " with message #{@e_message.inspect}" if @e_message.present?
         messages = [msg]
 
         if @exception.nil?
@@ -183,7 +194,7 @@ module Actionable
           if @e_message.present? && @exception.message != @e_message
             messages << "  the message was #{@exception.message.inspect}"
           end
-          messages << "  in #{backtrace_line(@exception)}"
+          add_backtrace_lines messages
         end
         messages
       end
