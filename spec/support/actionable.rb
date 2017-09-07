@@ -85,6 +85,13 @@ module TestActionable
     end
   end
 
+  class FinalAction < BaseAction
+    step :add_one
+    step :fail_for_2
+    on_success :add_two
+    on_failure :add_three
+  end
+
   class Post
     extend ActiveModel::Naming
 

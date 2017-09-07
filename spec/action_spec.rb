@@ -2,15 +2,16 @@ require 'spec_helper'
 
 module Actionable
   describe Action do
-    let(:klass) { TestActionable::GreatAction }
+    subject { klass.run number }
     context 'class' do
+      let(:klass) { TestActionable::GreatAction }
       it { expect(klass.model).to eq Invoice }
       it { expect(klass.steps.map(&:name)).to eq %w[fail_for_2 add_one add_two] }
       it { expect(klass.method(:call)).to eq klass.method(:run) }
       it { expect(klass.action_name).to eq 'test_actionable/great_action' }
     end
     context 'result' do
-      subject { klass.run number }
+      let(:klass) { TestActionable::GreatAction }
       context 'success' do
         let(:number) { 10 }
         it { is_expected.to be_a Actionable::Success }
@@ -44,7 +45,6 @@ module Actionable
           it { expect(klass.action_name).to eq 'test_actionable/composed_action' }
         end
         context 'result' do
-          subject { klass.run number }
           context 'success' do
             let(:number) { 10 }
             it { expect(subject.success?).to eq true }
@@ -64,7 +64,6 @@ module Actionable
           it { expect(klass.action_name).to eq 'test_actionable/over_composed_action' }
         end
         context 'result' do
-          subject { klass.run number }
           context 'success' do
             let(:number) { 10 }
             it { expect(subject.success?).to eq true }
@@ -80,7 +79,6 @@ module Actionable
     end
     context 'conditional' do
       let(:klass) { TestActionable::ConditionalAction }
-      subject { klass.run number }
       context 'if' do
         let(:number) { 1 }
         it { expect(subject.number).to eq 5 }
@@ -92,7 +90,6 @@ module Actionable
     end
     context 'case' do
       let(:klass) { TestActionable::CaseAction }
-      subject { klass.run number }
       context 'first step' do
         let(:number) { 1 }
         it { expect(subject.number).to eq 2 }
@@ -104,6 +101,17 @@ module Actionable
       context 'default step' do
         let(:number) { 3 }
         it { expect(subject.number).to eq 6 }
+      end
+    end
+    context 'final' do
+      let(:klass) { TestActionable::FinalAction }
+      context 'on success' do
+        let(:number) { 3 }
+        it { expect(subject.number).to eq 6 }
+      end
+      context 'on failure' do
+        let(:number) { 1 }
+        it { expect(subject.number).to eq 5 }
       end
     end
   end

@@ -7,6 +7,14 @@ module Actionable
 
       alias actions steps
 
+      def success_steps
+        @success_steps ||= Set.new
+      end
+
+      def failure_steps
+        @failure_steps ||= Set.new
+      end
+
       def step(name, options = {})
         steps.add Steps.build(name, options)
       end
@@ -18,6 +26,14 @@ module Actionable
       end
 
       alias case_action case_step
+
+      def on_success(name, options = {})
+        success_steps.add Steps.build(name, options)
+      end
+
+      def on_failure(name, options = {})
+        failure_steps.add Steps.build(name, options)
+      end
 
       def set_model(name = :nothing)
         @model_name = name.to_sym
@@ -37,7 +53,11 @@ module Actionable
 
       def run(*args, &blk)
         instance = new(*args)
-        run_with_transaction(instance, &blk) || run_without_transaction(instance, &blk)
+        if model
+          run_with_transaction(instance, &blk)
+        else
+          run_without_transaction(instance, &blk)
+        end
         instance.result
       end
 
@@ -50,20 +70,22 @@ module Actionable
       private
 
       def run_with_transaction(instance, &blk)
-        return false if model.nil?
-
         model.transaction { run_without_transaction instance, &blk }
       end
 
       def run_without_transaction(instance, &blk)
         raise 'No steps have been defined' unless steps.present?
 
-        run_through_actions instance
+        run_through_main_steps instance
         finalize_if_necessary instance
+
+        run_through_success_steps instance
+        run_through_failure_steps instance
+
         yield_on_success instance, &blk
       end
 
-      def run_through_actions(instance)
+      def run_through_main_steps(instance)
         steps.each do |step|
           break if instance.finished?
           step.run instance
@@ -76,10 +98,28 @@ module Actionable
         instance.send(:succeed)
       end
 
+      def run_through_success_steps(instance)
+        return unless instance.result.success?
+
+        success_steps.each do |step|
+          step.run instance
+          instance.result.fixtures = instance.fixtures
+        end
+      end
+
       def yield_on_success(instance)
         return unless block_given? && instance.result.success?
 
         yield instance.result
+      end
+
+      def run_through_failure_steps(instance)
+        return unless instance.result.failure?
+
+        failure_steps.each do |step|
+          step.run instance
+          instance.result.fixtures = instance.fixtures
+        end
       end
     end
 
