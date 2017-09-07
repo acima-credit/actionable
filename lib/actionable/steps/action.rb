@@ -9,8 +9,9 @@ module Actionable
       def run(instance)
         return if skip?(instance)
 
-        result = run_action instance
-        instance.update_fixtures result.fixtures
+        result   = run_action instance
+        fixtures = select_fixtures result.fixtures
+        instance.update_fixtures fixtures
         return if result.success?
 
         instance.fail result.code, result.message, result.errors
@@ -21,6 +22,13 @@ module Actionable
       def run_action(instance)
         params = @options[:params].map { |x| instance.fixtures[x] }
         @klass.run(*params)
+      end
+
+      def select_fixtures(fixtures)
+        return fixtures unless @options[:fixtures].present?
+
+        selected = @options[:fixtures].map { |x| x.to_s }
+        fixtures.select { |k, _| selected.include? k.to_s }
       end
     end
   end

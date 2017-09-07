@@ -68,6 +68,21 @@ module TestActionable
     step :add_ten
   end
 
+  class ExtraComposedAction < BaseAction
+    step :add_three
+    step :add_extra
+
+    def add_extra
+      @extra_one = true
+      @extra_two = true
+    end
+  end
+
+  class ControlledComposedAction < BaseAction
+    step :add_one
+    step ExtraComposedAction, params: [:number], fixtures: [:number, :extra_one]
+  end
+
   class ConditionalAction < BaseAction
     step :add_one, if: lambda { |x| x.number == 1 }
     step :add_three, unless: :is_three

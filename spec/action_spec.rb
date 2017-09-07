@@ -76,6 +76,17 @@ module Actionable
           end
         end
       end
+      context 'with named fixtures' do
+        let(:klass) { TestActionable::ControlledComposedAction }
+        context 'result' do
+          let(:number) { 10 }
+          it { expect(subject.success?).to eq true }
+          it { expect(subject.fixtures).to eq('number' => 14, 'extra_one' => true) }
+          it { expect(subject).to respond_to(:number) }
+          it { expect(subject).to respond_to(:extra_one) }
+          it { expect(subject).to_not respond_to(:extra_two) }
+        end
+      end
     end
     context 'conditional' do
       let(:klass) { TestActionable::ConditionalAction }
@@ -105,13 +116,21 @@ module Actionable
     end
     context 'final' do
       let(:klass) { TestActionable::FinalAction }
-      context 'on success' do
-        let(:number) { 3 }
-        it { expect(subject.number).to eq 6 }
+      context 'class' do
+        it { expect(klass.steps.map(&:name)).to eq %w[add_one fail_for_2] }
+        it { expect(klass.success_steps.map(&:name)).to eq %w[add_two] }
+        it { expect(klass.failure_steps.map(&:name)).to eq %w[add_three] }
+        it { expect(klass.action_name).to eq 'test_actionable/final_action' }
       end
-      context 'on failure' do
-        let(:number) { 1 }
-        it { expect(subject.number).to eq 5 }
+      context 'result' do
+        context 'on success' do
+          let(:number) { 3 }
+          it { expect(subject.number).to eq 6 }
+        end
+        context 'on failure' do
+          let(:number) { 1 }
+          it { expect(subject.number).to eq 5 }
+        end
       end
     end
   end
