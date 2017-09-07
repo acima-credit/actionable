@@ -66,7 +66,7 @@ Style/CollectionMethods:
 Style/Documentation:
   Enabled: false
 
-Style/DotPosition:
+Layout/DotPosition:
   EnforcedStyle: trailing
 
 Style/DoubleNegation:
@@ -87,10 +87,10 @@ Style/HashSyntax:
 Style/Lambda:
   Enabled: false
 
-Style/SpaceAroundOperators:
+Layout/SpaceAroundOperators:
   AllowForAlignment: true
 
-Style/SpaceInsideHashLiteralBraces:
+Layout/SpaceInsideHashLiteralBraces:
   EnforcedStyle: space
 
 Style/StringLiterals:
@@ -99,7 +99,7 @@ Style/StringLiterals:
 Style/TrivialAccessors:
   Enabled: false
 
-Style/AlignHash:
+Layout/AlignHash:
   EnforcedColonStyle: key
 
 Style/MethodMissing:

@@ -6,6 +6,7 @@ module Actionable
       PerformActionableMatcher.new(*args)
     end
 
+    # rubocop:disable ClassLength
     class PerformActionableMatcher
       attr_reader :type, :matched
 
@@ -165,7 +166,7 @@ module Actionable
 
         short = ENV.fetch('ACTIONABLE_SHORT_BACKTRACE', 'false') == 'true'
         path  = short ? match[1].split('/').last : match[1]
-        format %[    %s:%i in `%s'], path, match[2], match[3]
+        format %(    %s:%i in `%s'), path, match[2], match[3]
       end
 
       def failure_messages_for_failure_no_exception(messages)
@@ -182,8 +183,8 @@ module Actionable
       end
 
       def failure_messages_for_exception
-        msg      = "and throw a #{@e_klass} exception"
-        msg      += " with message #{@e_message.inspect}" if @e_message.present?
+        msg = "and throw a #{@e_klass} exception"
+        msg += " with message #{@e_message.inspect}" if @e_message.present?
         messages = [msg]
 
         if @exception.nil?
@@ -199,6 +200,7 @@ module Actionable
         messages
       end
     end
+    # rubocop:enable ClassLength
   end
 end
 

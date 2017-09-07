@@ -5,7 +5,7 @@ module Actionable
     let(:klass) { TestActionable::GreatAction }
     context 'class' do
       it { expect(klass.model).to eq Invoice }
-      it { expect(klass.steps.map(&:name)).to eq %w(fail_for_2 add_one add_two) }
+      it { expect(klass.steps.map(&:name)).to eq %w[fail_for_2 add_one add_two] }
       it { expect(klass.method(:call)).to eq klass.method(:run) }
       it { expect(klass.action_name).to eq 'test_actionable/great_action' }
     end
@@ -40,7 +40,7 @@ module Actionable
       context 'single' do
         let(:klass) { TestActionable::ComposedAction }
         context 'class' do
-          it { expect(klass.steps.map(&:name)).to eq %w(test_actionable/small_action add_five) }
+          it { expect(klass.steps.map(&:name)).to eq %w[test_actionable/small_action add_five] }
           it { expect(klass.action_name).to eq 'test_actionable/composed_action' }
         end
         context 'result' do
@@ -60,7 +60,7 @@ module Actionable
       context 'multiple' do
         let(:klass) { TestActionable::OverComposedAction }
         context 'class' do
-          it { expect(klass.steps.map(&:name)).to eq %w(add_five test_actionable/composed_action add_ten) }
+          it { expect(klass.steps.map(&:name)).to eq %w[add_five test_actionable/composed_action add_ten] }
           it { expect(klass.action_name).to eq 'test_actionable/over_composed_action' }
         end
         context 'result' do
