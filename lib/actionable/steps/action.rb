@@ -27,7 +27,7 @@ module Actionable
       def select_fixtures(fixtures)
         return fixtures unless @options[:fixtures].present?
 
-        selected = @options[:fixtures].map { |x| x.to_s }
+        selected = @options[:fixtures].map(&:to_s)
         fixtures.select { |k, _| selected.include? k.to_s }
       end
     end

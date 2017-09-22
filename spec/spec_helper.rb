@@ -3,6 +3,7 @@ require 'actionable'
 require 'support/string'
 require 'support/database'
 require 'actionable/rspec/matchers'
+require 'actionable/rspec/stubs'
 require 'actionable/proxy_validator'
 require 'support/actionable'
 
