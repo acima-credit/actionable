@@ -15,6 +15,10 @@ module Actionable
         @failure_steps ||= Set.new
       end
 
+      def always_steps
+        @always_steps ||= Set.new
+      end
+
       def step(name, options = {})
         steps.add Steps.build(name, options)
       end
@@ -33,6 +37,10 @@ module Actionable
 
       def on_failure(name, options = {})
         failure_steps.add Steps.build(name, options)
+      end
+
+      def always(name, options = {})
+        always_steps.add Steps.build(name, options)
       end
 
       def set_model(name = :nothing)

@@ -30,6 +30,7 @@ module Actionable
 
       run_through_success_steps
       run_through_failure_steps
+      run_through_always_steps
 
       yield_on_success(&blk)
     end
@@ -67,6 +68,13 @@ module Actionable
       return unless @instance.result.failure?
 
       @klass.failure_steps.each do |step|
+        step.run @instance
+        @instance.result.fixtures = @instance.fixtures
+      end
+    end
+
+    def run_through_always_steps
+      @klass.always_steps.each do |step|
         step.run @instance
         @instance.result.fixtures = @instance.fixtures
       end
