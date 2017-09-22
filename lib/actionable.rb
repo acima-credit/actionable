@@ -13,6 +13,7 @@ require 'actionable/result'
 require 'actionable/success'
 require 'actionable/failure'
 require 'actionable/steps'
+require 'actionable/action_runner'
 require 'actionable/action'
 
 module Actionable

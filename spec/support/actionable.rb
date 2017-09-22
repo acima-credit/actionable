@@ -80,7 +80,7 @@ module TestActionable
 
   class ControlledComposedAction < BaseAction
     step :add_one
-    step ExtraComposedAction, params: [:number], fixtures: [:number, :extra_one]
+    step ExtraComposedAction, params: [:number], fixtures: %i[number extra_one]
   end
 
   class ConditionalAction < BaseAction
