@@ -56,4 +56,21 @@ module Actionable
       end
     end
   end
+  describe 'stub helpers' do
+    let(:action_class) { TestActionable::GreatAction }
+    context '#stub_actionable_success' do
+      it 'works' do
+        stub_actionable_success action_class, a: 1
+        expect_any_instance_of(action_class).to_not receive(:add_one)
+        expect(action_class).to perform_actionable(6).and_succeed
+      end
+    end
+    context '#stub_actionable_failure' do
+      it 'works' do
+        stub_actionable_failure action_class, :xyz
+        expect_any_instance_of(action_class).to_not receive(:add_one)
+        expect(action_class).to perform_actionable(9).and_fail :xyz
+      end
+    end
+  end
 end
