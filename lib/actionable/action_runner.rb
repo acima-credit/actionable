@@ -35,11 +35,19 @@ module Actionable
       yield_on_success(&blk)
     end
 
+    # rubocop:disable HandleExceptions
+    def run_step(step)
+      step.run @instance
+    rescue SkippableError
+    end
+
+    # rubocop:enable HandleExceptions
+
     def run_through_main_steps
       @klass.steps.each do |step|
         break if @instance.finished?
 
-        step.run @instance
+        run_step step
       end
     end
 
@@ -53,7 +61,7 @@ module Actionable
       return unless @instance.result.success?
 
       @klass.success_steps.each do |step|
-        step.run @instance
+        run_step step
         @instance.result.fixtures = @instance.fixtures
       end
     end
@@ -68,14 +76,14 @@ module Actionable
       return unless @instance.result.failure?
 
       @klass.failure_steps.each do |step|
-        step.run @instance
+        run_step step
         @instance.result.fixtures = @instance.fixtures
       end
     end
 
     def run_through_always_steps
       @klass.always_steps.each do |step|
-        step.run @instance
+        run_step step
         @instance.result.fixtures = @instance.fixtures
       end
     end

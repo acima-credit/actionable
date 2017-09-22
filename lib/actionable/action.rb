@@ -83,10 +83,23 @@ module Actionable
       false
     end
 
+    def succeed!(*args)
+      succeed(*args)
+      raise SuccessError, @result.message
+    end
+
     def fail(code, message = nil, errors = {})
       @result = Failure.new code: code, message: message, errors: errors, fixtures: fixtures
       false
     end
+
+    # rubocop:disable UnreachableCode
+    def fail!(*args)
+      fail(*args)
+      raise FailureError, @result.message
+    end
+
+    # rubocop:enable UnreachableCode
 
     def finished?
       @result.present?

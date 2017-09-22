@@ -1,5 +1,10 @@
 require 'bundler/setup'
+
+require 'simplecov'
+SimpleCov.start
+
 require 'actionable'
+
 require 'support/string'
 require 'support/database'
 require 'actionable/rspec/matchers'

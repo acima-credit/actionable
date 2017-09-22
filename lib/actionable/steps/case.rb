@@ -16,7 +16,7 @@ module Actionable
 
       def run(instance)
         @value = instance.fixtures[name] || instance.send(name)
-        ran = false
+        ran    = false
 
         @cases.each do |case_value, step|
           next unless value_cmp(@value, case_value)

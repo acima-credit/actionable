@@ -120,16 +120,42 @@ module Actionable
         it { expect(klass.steps.map(&:name)).to eq %w[add_one fail_for_2] }
         it { expect(klass.success_steps.map(&:name)).to eq %w[add_two] }
         it { expect(klass.failure_steps.map(&:name)).to eq %w[add_three] }
+        it { expect(klass.always_steps.map(&:name)).to eq %w[add_five] }
         it { expect(klass.action_name).to eq 'test_actionable/final_action' }
       end
       context 'result' do
         context 'on success' do
           let(:number) { 3 }
-          it { expect(subject.number).to eq 6 }
+          it { expect(subject.number).to eq 11 }
         end
         context 'on failure' do
           let(:number) { 1 }
-          it { expect(subject.number).to eq 5 }
+          it { expect(subject.number).to eq 10 }
+        end
+      end
+    end
+    context 'bang' do
+      let(:klass) { TestActionable::BangAction }
+      subject { klass.run letter }
+      context 'class' do
+        it { expect(klass.steps.map(&:name)).to eq %w[fail_for_x succeed_for_y ok_for_others] }
+        it { expect(klass.success_steps.map(&:name)).to eq [] }
+        it { expect(klass.failure_steps.map(&:name)).to eq [] }
+        it { expect(klass.always_steps.map(&:name)).to eq [] }
+        it { expect(klass.action_name).to eq 'test_actionable/bang_action' }
+      end
+      context 'result' do
+        context 'on failure!' do
+          let(:letter) { :x }
+          it { expect(subject.final).to eq '[x]' }
+        end
+        context 'on success!' do
+          let(:letter) { :y }
+          it { expect(subject.final).to eq '[y] > x' }
+        end
+        context 'on other' do
+          let(:letter) { :z }
+          it { expect(subject.final).to eq '[z] > x > y > ok' }
         end
       end
     end

@@ -29,10 +29,6 @@ module TestActionable
       @number += 3
     end
 
-    def add_four
-      @number += 4
-    end
-
     def add_five
       @number += 5
     end
@@ -105,6 +101,34 @@ module TestActionable
     step :fail_for_2
     on_success :add_two
     on_failure :add_three
+    always :add_five
+  end
+
+  class BangAction < BaseAction
+    step :fail_for_x
+    step :succeed_for_y
+    step :ok_for_others
+
+    def initialize(letter)
+      @letter = letter.to_s.downcase
+      @final  = "[#{@letter}]"
+    end
+
+    def fail_for_x
+      fail! :bad_x, 'not x' if @letter == 'x'
+
+      @final += ' > x'
+    end
+
+    def succeed_for_y
+      succeed! :good_y, 'yes y' if @letter == 'y'
+
+      @final += ' > y'
+    end
+
+    def ok_for_others
+      @final += ' > ok'
+    end
   end
 
   class Post
@@ -133,6 +157,13 @@ module TestActionable
     def self.extra
       true
     end
+
+    def to_s
+      %(#<#{self.class.name} title=#{title.inspect} author=#{author.inspect} ) +
+        %(publication_date=#{publication_date.inspect}>)
+    end
+
+    alias inspect to_s
   end
 
   class PostValidator < Actionable::ProxyValidator

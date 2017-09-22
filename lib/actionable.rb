@@ -9,6 +9,7 @@ require 'active_support/core_ext/object/instance_variables'
 require 'active_support/core_ext/hash/indifferent_access'
 
 require 'actionable/version'
+require 'actionable/exceptions'
 require 'actionable/result'
 require 'actionable/success'
 require 'actionable/failure'
