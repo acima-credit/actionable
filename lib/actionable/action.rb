@@ -52,74 +52,13 @@ module Actionable
       end
 
       def run(*args, &blk)
-        instance = new(*args)
-        if model
-          run_with_transaction(instance, &blk)
-        else
-          run_without_transaction(instance, &blk)
-        end
-        instance.result
+        ActionRunner.new(self).run(*args, &blk)
       end
 
       alias call run
 
       def action_name
         name.underscore
-      end
-
-      private
-
-      def run_with_transaction(instance, &blk)
-        model.transaction { run_without_transaction instance, &blk }
-      end
-
-      def run_without_transaction(instance, &blk)
-        raise 'No steps have been defined' unless steps.present?
-
-        run_through_main_steps instance
-        finalize_if_necessary instance
-
-        run_through_success_steps instance
-        run_through_failure_steps instance
-
-        yield_on_success instance, &blk
-      end
-
-      def run_through_main_steps(instance)
-        steps.each do |step|
-          break if instance.finished?
-          step.run instance
-        end
-      end
-
-      def finalize_if_necessary(instance)
-        return if instance.finished?
-
-        instance.send(:succeed)
-      end
-
-      def run_through_success_steps(instance)
-        return unless instance.result.success?
-
-        success_steps.each do |step|
-          step.run instance
-          instance.result.fixtures = instance.fixtures
-        end
-      end
-
-      def yield_on_success(instance)
-        return unless block_given? && instance.result.success?
-
-        yield instance.result
-      end
-
-      def run_through_failure_steps(instance)
-        return unless instance.result.failure?
-
-        failure_steps.each do |step|
-          step.run instance
-          instance.result.fixtures = instance.fixtures
-        end
       end
     end
 
