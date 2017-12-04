@@ -21,9 +21,19 @@ module Actionable
       expect(klass).to receive(:run).and_return result
     end
 
+    def allow_actionable_success(klass, fixtures = {})
+      result = klass.mock_success fixtures
+      allow(klass).to receive(:run).and_return result
+    end
+
     def stub_actionable_failure(klass, code, message = '', fixtures = {})
       result = klass.mock_failure code, message, fixtures
       expect(klass).to receive(:run).and_return result
+    end
+
+    def allow_actionable_failure(klass, code, message = '', fixtures = {})
+      result = klass.mock_failure code, message, fixtures
+      allow(klass).to receive(:run).and_return result
     end
   end
 end
