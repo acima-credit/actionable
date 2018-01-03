@@ -104,7 +104,38 @@ class CreateInvoice < Actionable::Action
 end
 ```
 
-Now we know that all these step will execute successfully or the action will fail. And since we declared 
+We know that all these steps will execute successfully or the action will fail.
+
+An action step can also point to another action to run through all of that action's steps. Maybe we already have an action setup to notify customer's via email and text messages. You can pass parameters, such as the @invoice we've already created in an array of symbols, like so `params: %i[invoice]`
+
+```ruby
+class CreateInvoice < Actionable::Action
+
+  step NotifyCustomer, params: %i[invoice]
+end
+```
+
+And here is an example of the `NotifyCustomer` class:
+
+```ruby
+class NotifyCustomer < Actionable::Action
+  step :email
+  step :sms
+
+  def initialize(deliverable)
+    super()
+    @deliverable = deliverable
+  end
+
+  def email
+    CustomerMailer.send_email @deliverable
+  end
+
+  def sms
+    CustomerSmsDeliverer.send_sms @deliverable
+  end
+end
+```
 
 ## Development
 
