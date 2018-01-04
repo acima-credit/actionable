@@ -210,7 +210,9 @@ class CreateInvoice < ::Actionable::Action
 end
 ```
 
-There are a couple of special methods that can be called to immediately short circuit the execution of the steps if we know that everything was successful or if things failed early. They are `succeed!` and `fail!`. In the following example, we won't get to the `create` step because we'll fail before then. `succeed!` is going to work the exact same way, it'll just cause the result to have a status of `success` rather than `fail`.
+There are a couple of special methods that can be called to immediately short circuit the execution of the steps if we know that everything was successful or if things failed early. They are `succeed!` and `fail!`. In the following example, we won't get to the `create` step if the amount is missing because we'll fail before then. `succeed!` is going to work the exact same way, it'll just cause the result to have a status of `success` rather than `fail`.
+
+There are also `fail` and `sucess` methods, without the bang. These will not short circuit the execution, but will create either a failure or success object, and continue execution. So, because of this, in the example, if we're missing only the name, but not the amount, we'll still go through and complete creating the invoice, but we'll end up with a failure object letting us know that the name was missing. However, if the amount is missing, we won't go on to actually create the invoice after validation.
 
 ```ruby
 class CreateInvoice < ::Actionable::Action
@@ -227,7 +229,8 @@ class CreateInvoice < ::Actionable::Action
   end
 
   def vaidate
-    fail!
+    fail :name_invalid, "Name missing" unless @params[:name].present?
+    fail! :amount_location, "Amount missing" unless @params[:amount].present?
   end
 
   def create
@@ -262,13 +265,37 @@ result
 # => #<Actionable::Success code=:success, message="Completed successfully.", errors={}, fixtures=["invoice", "params"]>
 ```
 
-To make testing easier, a couple rspec stubs have been added if you require `actionable/rspec/stubs`. The two stubs are `stub_actionable_success` and `stub_actionable_failure`.
+To make testing easier, a couple rspec stubs have been added if you require `actionable/rspec/stubs`. The stubs are `stub_actionable_success`/`allow_actionable_success` and `stub_actionable_failure`/`allow_actionable_failure`.
 
-`stub_actionable_success` takes the klass and an optional hash of fixtures and will return a success object with the fixtures you specified. `stub_actionable_failure` takes the klass, error_code, optional error_message, and an optional hash of fixtures and will return a failure object with the code, message, and fixtures specified.
+`stub_actionable_success`/`allow_actionable_success` take the klass and an optional hash of fixtures and will return a success object with the fixtures you specified. `stub_actionable_failure`/`allow_actionable_failure` takes the klass, error_code, optional error_message, and an optional hash of fixtures and will return a failure object with the code, message, and fixtures specified. The stub versions of these run with an expectation that the klass will be called with `run`, while the allow version simply allows it to run if we need it, but isn't required.
 
 ```ruby
-stub_actionable_success CreateInvoice, invoice: invoice
-stub_actionable_failure ReceiveAchStatus, :invalid_ach, "The ACH was invalid", ach: ach
+Rspec.describe CreateInvoice do
+  let(:invoice_params) { { amount: 1234.56 } }
+
+  before { allow_actionable_success CreateInvoice, invoice_params: invoice_params }
+
+  context "without errors" do
+    let(:result) { CreateInvoice.run(invoice_params) }
+
+    before { expect_actionable_success CreateInvoice, invoice_params: invoice_params }
+
+    it "returns a success object" do
+      expect(result.code).to eq(:success)
+    end
+  end
+
+  context "with errors" do
+    let(:invalid_invoice_params) { { amount: nil } }
+    let(:result) { CreateInvoice.run(invalid_invoice_params) }
+
+    before { expect_actionable_failure CreateInvoice, :invalid_params, "Amount was invalid", invoice_params: invalid_invoice_params }
+
+    it "returns a failure object" do
+      expect(result.code).to eq(:failure)
+    end
+  end
+end
 ```
 
 ## Development
