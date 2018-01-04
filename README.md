@@ -262,6 +262,15 @@ result
 # => #<Actionable::Success code=:success, message="Completed successfully.", errors={}, fixtures=["invoice", "params"]>
 ```
 
+To make testing easier, a couple rspec stubs have been added if you require `actionable/rspec/stubs`. The two stubs are `stub_actionable_success` and `stub_actionable_failure`.
+
+`stub_actionable_success` takes the klass and an optional hash of fixtures and will return a success object with the fixtures you specified. `stub_actionable_failure` takes the klass, error_code, optional error_message, and an optional hash of fixtures and will return a failure object with the code, message, and fixtures specified.
+
+```ruby
+stub_actionable_success CreateInvoice, invoice: invoice
+stub_actionable_failure ReceiveAchStatus, :invalid_ach, "The ACH was invalid", ach: ach
+```
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
