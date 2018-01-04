@@ -137,6 +137,131 @@ class NotifyCustomer < Actionable::Action
 end
 ```
 
+We can also use case statements in our action steps, called `case_steps`. This will allow us to conditionally execute some steps, just like a case statement does. The second, and optional third, arguments to `on` are just like normal `steps` where you can either pass a symbol or string to call a method, or another `Actionable::Action` class.
+
+```ruby
+class ReceiveAchStatus < ::Actionable::Action
+  :attr_reader :ach_status
+
+  case_step :ach_status do
+    on 'sent', :sent
+    on 'settled', :settled
+    on %w[returned internally_returned], :returned
+  end
+
+  def initialize(ach_status)
+    super()
+    @ach_status = ach_status
+  end
+
+  def sent
+  end
+
+  def settled
+  end
+
+  def returned
+  end
+end
+```
+
+There are special steps that are only ran if the main steps were successful or if they failed. These are called `success_steps` and `failure_steps`. They work just like any other step, excpet that they are always ran at the end.
+
+```ruby
+class CreateInvoice < ::Actionable::Action
+  step :build
+  step :validate
+  step :create
+
+  on_failure :log_failure
+  on_failure :build_failure_response
+  on_success :build_success_response
+
+  def initialize(params)
+    super()
+    @params = params
+  end
+
+  def build
+  end
+
+  def vaidate
+  end
+
+  def create
+  end
+
+  def log_failure
+    logger.warn "failed to create invoice with params: #{@params}"
+  end
+
+  def build_failure_response
+    @response = {
+      status: 'error',
+      message: 'failed to create invoice'
+    }
+  end
+
+  def build_success_response
+    @response = {
+      status: 'success'
+    }
+  end
+end
+```
+
+There are a couple of special methods that can be called to immediately short circuit the execution of the steps if we know that everything was successful or if things failed early. They are `succeed!` and `fail!`. In the following example, we won't get to the `create` step because we'll fail before then. `succeed!` is going to work the exact same way, it'll just cause the result to have a status of `success` rather than `fail`.
+
+```ruby
+class CreateInvoice < ::Actionable::Action
+  step :build
+  step :validate
+  step :create
+
+  def initialize(params)
+    super()
+    @params = params
+  end
+
+  def build
+  end
+
+  def vaidate
+    fail!
+  end
+
+  def create
+  end
+end
+```
+
+Any instance variables that get created while running through the steps will be available in the result object in a fixtures attribute. For convenience, there are also methods setup on the result object to call those instance variables directly.
+
+```ruby
+class CreateInvoice < ::Actionalbe::Action
+  step :build
+
+  def initialize(params)
+    super()
+    @params = params
+  end
+
+  def build
+    @invoice = Invoice.new
+  end
+end
+```
+
+```ruby
+result = CreateInvoice.run({})
+result.params
+# => {}
+result.invoice
+# => #<Invoice invoice_number=1234>
+result
+# => #<Actionable::Success code=:success, message="Completed successfully.", errors={}, fixtures=["invoice", "params"]>
+```
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
