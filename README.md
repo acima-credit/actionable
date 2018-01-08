@@ -104,7 +104,241 @@ class CreateInvoice < Actionable::Action
 end
 ```
 
-Now we know that all these step will execute successfully or the action will fail. And since we declared 
+We know that all these steps will execute successfully or the action will fail.
+
+Steps are able to take an optional options hash. The keys are `:if`, `:unless`, `:params`, and `:fixtures`. `:if` and `:unless` can take either a symbol, which will call a method in the class, or they can take a block. They control if that step is executed or not.
+
+```ruby
+class CreateInvoice < Actionable::Action
+
+  step :notify, if: :notify_customer?
+end
+```
+
+```ruby
+class CreateInvoice < Actionable::Action
+
+  step :notify, unless: { |instance| instance.current_user.disabled_notifications? }
+end
+```
+
+An action step can also point to another action to run through all of that action's steps. Maybe we already have an action setup to notify customer's via email and text messages. You can pass parameters, such as the @invoice we've already created in an array of symbols, like so `params: %i[invoice]`
+
+```ruby
+class CreateInvoice < Actionable::Action
+
+  step NotifyCustomer, params: %i[invoice]
+end
+```
+
+And here is an example of the `NotifyCustomer` class:
+
+```ruby
+class NotifyCustomer < Actionable::Action
+  step :email
+  step :sms
+
+  def initialize(deliverable)
+    super()
+    @deliverable = deliverable
+  end
+
+  def email
+    CustomerMailer.send_email @deliverable
+  end
+
+  def sms
+    CustomerSmsDeliverer.send_sms @deliverable
+  end
+end
+```
+
+Finally, by using the `:fixtures` option, you can control which instance variables get sent back when we're calling another actionable action class and are saved in our fixtures and returned.
+
+```ruby
+class CreateInvoice << Actionable::Action
+  step NotifyCustomer, params: %i[invoice], fixtures: %i[email sms]
+end
+
+class NotifyCustomer < Actionable::Action
+  step :email
+  step :sms
+
+  def initialize(deliverable)
+    super()
+    @deliverable = deliverable
+  end
+
+  def email
+    @email = CustomerMailer.send_email @deliverable
+  end
+
+  def sms
+    @sms = CustomerSmsDeliverer.send_sms @deliverable
+  end
+end
+```
+
+We can also use case statements in our action steps, called `case_steps`. This will allow us to conditionally execute some steps, just like a case statement does. The second, and optional third, arguments to `on` are just like normal `steps` where you can either pass a symbol or string to call a method, or another `Actionable::Action` class.
+
+```ruby
+class ReceiveAchStatus < ::Actionable::Action
+  :attr_reader :ach_status
+
+  case_step :ach_status do
+    on 'sent', :sent
+    on 'settled', :settled
+    on %w[returned internally_returned], :returned
+  end
+
+  def initialize(ach_status)
+    super()
+    @ach_status = ach_status
+  end
+
+  def sent
+  end
+
+  def settled
+  end
+
+  def returned
+  end
+end
+```
+
+There are special steps that are only ran if the main steps were successful or if they failed. These are called `success_steps` and `failure_steps`. They work just like any other step, excpet that they are always ran at the end.
+
+```ruby
+class CreateInvoice < ::Actionable::Action
+  step :build
+  step :validate
+  step :create
+
+  on_failure :log_failure
+  on_failure :build_failure_response
+  on_success :build_success_response
+
+  def initialize(params)
+    super()
+    @params = params
+  end
+
+  def build
+  end
+
+  def vaidate
+  end
+
+  def create
+  end
+
+  def log_failure
+    logger.warn "failed to create invoice with params: #{@params}"
+  end
+
+  def build_failure_response
+    @response = {
+      status: 'error',
+      message: 'failed to create invoice'
+    }
+  end
+
+  def build_success_response
+    @response = {
+      status: 'success'
+    }
+  end
+end
+```
+
+There are a couple of special methods that can be called to immediately short circuit the execution of the steps if we know that everything was successful or if things failed early. They are `succeed!` and `fail!`. In the following example, we won't get to the `create` step if the amount is missing because we'll fail before then. `succeed!` is going to work the exact same way, it'll just cause the result to have a status of `success` rather than `fail`.
+
+There are also `fail` and `sucess` methods, without the bang. These will not short circuit the execution, but will create either a failure or success object, and continue execution. So, because of this, in the example, if we're missing only the name, but not the amount, we'll still go through and complete creating the invoice, but we'll end up with a failure object letting us know that the name was missing. However, if the amount is missing, we won't go on to actually create the invoice after validation.
+
+```ruby
+class CreateInvoice < ::Actionable::Action
+  step :build
+  step :validate
+  step :create
+
+  def initialize(params)
+    super()
+    @params = params
+  end
+
+  def build
+  end
+
+  def vaidate
+    fail :name_invalid, "Name missing" unless @params[:name].present?
+    fail! :amount_location, "Amount missing" unless @params[:amount].present?
+  end
+
+  def create
+  end
+end
+```
+
+Any instance variables that get created while running through the steps will be available in the result object in a fixtures attribute. For convenience, there are also methods setup on the result object to call those instance variables directly.
+
+```ruby
+class CreateInvoice < ::Actionalbe::Action
+  step :build
+
+  def initialize(params)
+    super()
+    @params = params
+  end
+
+  def build
+    @invoice = Invoice.new
+  end
+end
+```
+
+```ruby
+result = CreateInvoice.run({})
+result.params
+# => {}
+result.invoice
+# => #<Invoice invoice_number=1234>
+result
+# => #<Actionable::Success code=:success, message="Completed successfully.", errors={}, fixtures=["invoice", "params"]>
+```
+
+To make testing easier, a couple rspec stubs have been added if you require `actionable/rspec/stubs`. The stubs are `stub_actionable_success`/`allow_actionable_success` and `stub_actionable_failure`/`allow_actionable_failure`.
+
+`stub_actionable_success`/`allow_actionable_success` take the klass and an optional hash of fixtures and will return a success object with the fixtures you specified. `stub_actionable_failure`/`allow_actionable_failure` takes the klass, error_code, optional error_message, and an optional hash of fixtures and will return a failure object with the code, message, and fixtures specified. The stub versions of these run with an expectation that the klass will be called with `run`, while the allow version simply allows it to run if we need it, but isn't required.
+
+```ruby
+Rspec.describe CreateInvoice do
+  let(:invoice_params) { { amount: 1234.56 } }
+
+  before { allow_actionable_success CreateInvoice, invoice_params: invoice_params }
+
+  context "without errors" do
+    let(:result) { CreateInvoice.run(invoice_params) }
+
+    before { expect_actionable_success CreateInvoice, invoice_params: invoice_params }
+
+    it "returns a success object" do
+      expect(result.code).to eq(:success)
+    end
+  end
+
+  context "with errors" do
+    let(:invalid_invoice_params) { { amount: nil } }
+    let(:result) { CreateInvoice.run(invalid_invoice_params) }
+
+    before { expect_actionable_failure CreateInvoice, :invalid_params, "Amount was invalid", invoice_params: invalid_invoice_params }
+
+    it "returns a failure object" do
+      expect(result.code).to eq(:failure)
+    end
+  end
+end
+```
 
 ## Development
 
