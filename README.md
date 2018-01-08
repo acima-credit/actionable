@@ -106,6 +106,22 @@ end
 
 We know that all these steps will execute successfully or the action will fail.
 
+Steps are able to take an optional options hash. The keys are `:if`, `:unless`, `:params`, and `:fixtures`. `:if` and `:unless` can take either a symbol, which will call a method in the class, or they can take a block. They control if that step is executed or not.
+
+```ruby
+class CreateInvoice < Actionable::Action
+
+  step :notify, if: :notify_customer?
+end
+```
+
+```ruby
+class CreateInvoice < Actionable::Action
+
+  step :notify, unless: { |instance| instance.current_user.disabled_notifications? }
+end
+```
+
 An action step can also point to another action to run through all of that action's steps. Maybe we already have an action setup to notify customer's via email and text messages. You can pass parameters, such as the @invoice we've already created in an array of symbols, like so `params: %i[invoice]`
 
 ```ruby
@@ -133,6 +149,32 @@ class NotifyCustomer < Actionable::Action
 
   def sms
     CustomerSmsDeliverer.send_sms @deliverable
+  end
+end
+```
+
+Finally, by using the `:fixtures` option, you can control which instance variables get sent back when we're calling another actionable action class and are saved in our fixtures and returned.
+
+```ruby
+class CreateInvoice << Actionable::Action
+  step NotifyCustomer, params: %i[invoice], fixtures: %i[email sms]
+end
+
+class NotifyCustomer < Actionable::Action
+  step :email
+  step :sms
+
+  def initialize(deliverable)
+    super()
+    @deliverable = deliverable
+  end
+
+  def email
+    @email = CustomerMailer.send_email @deliverable
+  end
+
+  def sms
+    @sms = CustomerSmsDeliverer.send_sms @deliverable
   end
 end
 ```
