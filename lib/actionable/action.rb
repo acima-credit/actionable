@@ -19,43 +19,35 @@ module Actionable
         @always_steps ||= Set.new
       end
 
-      def step(name, options = {})
-        added = steps.add? Steps.build(name, options)
+      def add_step(type, step)
+        added = send(type).add? step
         return unless added
 
-        log_action 'added : %s', added.to_s
+        log_action '%s : added : %s', type, added.to_s
+      end
+
+      def step(name, options = {})
+        add_step :steps, Steps.build(name, options)
       end
 
       alias action step
 
       def case_step(name, options = {}, &blk)
-        added = steps.add? Steps::Case.new(name, options, &blk)
-        return unless added
-
-        log_action 'added : %s', added.to_s
+        add_step :steps, Steps::Case.new(name, options, &blk)
       end
 
       alias case_action case_step
 
       def on_success(name, options = {})
-        added = success_steps.add? Steps.build(name, options)
-        return unless added
-
-        log_action 'added : %s', added.to_s
+        add_step :success_steps, Steps.build(name, options)
       end
 
       def on_failure(name, options = {})
-        added = failure_steps.add? Steps.build(name, options)
-        return unless added
-
-        log_action 'added : %s', added.to_s
+        add_step :failure_steps, Steps.build(name, options)
       end
 
       def always(name, options = {})
-        added = always_steps.add? Steps.build(name, options)
-        return unless added
-
-        log_action 'added : %s', added.to_s
+        add_step :always_steps, Steps.build(name, options)
       end
 
       def set_model(name = :nothing)
