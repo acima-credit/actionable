@@ -23,7 +23,7 @@ module Actionable
         added = send(type).add? step
         return unless added
 
-        log_action '%s : added : %s : %s : %s', type, step.class.name, step.name, step.options.inspect
+        log_action '%s : %s : %s', type, step.name, step.options.inspect
       end
 
       def step(name, options = {})
