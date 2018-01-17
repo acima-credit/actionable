@@ -87,6 +87,30 @@ module Actionable
           it { expect(subject).to_not respond_to(:extra_two) }
         end
       end
+      context 'conditional' do
+        let(:klass) { TestActionable::ComposedConditionalAction }
+        context 'class' do
+          it { expect(klass.steps.map(&:name)).to eq %w[test_actionable/fail_on_add_action add_five] }
+          it { expect(klass.action_name).to eq 'test_actionable/composed_conditional_action' }
+        end
+        context 'result', :focus do
+          context 'success running nested action' do
+            let(:number) { 1 }
+            it { expect(subject.success?).to eq true }
+            it { expect(subject.fixtures).to eq('number' => 9) }
+          end
+          context 'success skipping nested action' do
+            let(:number) { 2 }
+            it { expect(subject.success?).to eq true }
+            it { expect(subject.fixtures).to eq('number' => 7) }
+          end
+          context 'failure' do
+            let(:number) { 3 }
+            it { expect(subject.success?).to eq false }
+            it { expect(subject.fixtures).to eq('number' => 6) }
+          end
+        end
+      end
     end
     context 'conditional' do
       let(:klass) { TestActionable::ConditionalAction }
