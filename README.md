@@ -1,4 +1,4 @@
-# Actionable [![Build Status](https://travis-ci.org/acima-credit/actionable.svg?branch=master)](https://travis-ci.org/simple-finance/actionable)
+# Actionable [![Build Status](https://travis-ci.org/acima-credit/actionable.svg?branch=master)](https://travis-ci.org/acima-credit/actionable)
 
 ## Simple and effective Ruby service objects. 
 Actionable actions encapsulate business logic in a composable way that makes it easy to change when requirements change.  
