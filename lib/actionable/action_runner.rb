@@ -8,11 +8,14 @@ module Actionable
       @instance = @klass.new(*args)
 
       if @klass.model
+        @instance.log_action 'running with a transaction from %s', @klass.model
         run_with_transaction(&blk)
       else
+        @instance.log_action 'running without a transaction'
         run_without_transaction(&blk)
       end
 
+      @instance.log_action 'result : %s : %s', @instance.result.code, @instance.result.message
       @instance.result
     end
 
@@ -35,18 +38,20 @@ module Actionable
       yield_on_success(&blk)
     end
 
-    # rubocop:disable HandleExceptions
     def run_step(step)
       step.run @instance
-    rescue SkippableError
+    rescue SkippableError => e
+      @instance.log_action 'step : %s : skippable error : %s : %s', step.name, e.class.name, e.message
     end
-
-    # rubocop:enable HandleExceptions
 
     def run_through_main_steps
       @klass.steps.each do |step|
-        break if @instance.finished?
+        if @instance.finished?
+          @instance.log_action '%s : skipping since finished', step.name
+          break
+        end
 
+        @instance.log_action '%s : start ...', step.name
         run_step step
       end
     end
@@ -54,6 +59,7 @@ module Actionable
     def finalize_if_necessary
       return if @instance.finished?
 
+      @instance.log_action 'step : finalizing ...'
       @instance.send(:succeed)
     end
 
@@ -61,6 +67,7 @@ module Actionable
       return unless @instance.result.success?
 
       @klass.success_steps.each do |step|
+        @instance.log_action '%s : start ...', step.name
         run_step step
         @instance.result.fixtures = @instance.fixtures
       end
@@ -69,6 +76,7 @@ module Actionable
     def yield_on_success
       return unless block_given? && @instance.result.success?
 
+      @instance.log_action 'yielding on success ...'
       yield @instance.result
     end
 
@@ -76,6 +84,7 @@ module Actionable
       return unless @instance.result.failure?
 
       @klass.failure_steps.each do |step|
+        @instance.log_action '%s : start ...', step.name
         run_step step
         @instance.result.fixtures = @instance.fixtures
       end
@@ -83,6 +92,7 @@ module Actionable
 
     def run_through_always_steps
       @klass.always_steps.each do |step|
+        @instance.log_action '%s : start ...', step.name
         run_step step
         @instance.result.fixtures = @instance.fixtures
       end

@@ -87,13 +87,13 @@ module Actionable
           it { expect(subject).to_not respond_to(:extra_two) }
         end
       end
-      context 'conditional' do
+      context 'conditional', :focus do
         let(:klass) { TestActionable::ComposedConditionalAction }
         context 'class' do
           it { expect(klass.steps.map(&:name)).to eq %w[test_actionable/fail_on_add_action add_five] }
           it { expect(klass.action_name).to eq 'test_actionable/composed_conditional_action' }
         end
-        context 'result', :focus do
+        context 'result' do
           context 'success running nested action' do
             let(:number) { 1 }
             it { expect(subject.success?).to eq true }
@@ -180,6 +180,28 @@ module Actionable
         context 'on other' do
           let(:letter) { :z }
           it { expect(subject.final).to eq '[z] > x > y > ok' }
+        end
+      end
+    end
+    context 'logging', :focus do
+      let(:klass) { TestActionable::LoggingAction }
+      let(:number) { 1 }
+      subject { klass.run number }
+      context 'result' do
+        context 'on success' do
+          before do
+            expect_logs :info,
+                        'TestActionable::LoggingAction : initialize | @number = 1',
+                        'TestActionable::LoggingAction : run | running with a transaction from Invoice',
+                        'TestActionable::LoggingAction : block in run_through_main_steps | add_one : start ...',
+                        'TestActionable::LoggingAction : add_one | 1 + 1 = 2',
+                        'TestActionable::LoggingAction : block in run_through_main_steps | add_two : start ...',
+                        'TestActionable::LoggingAction : add_two | 2 + 2 = 4',
+                        'TestActionable::LoggingAction : finalize_if_necessary | step : finalizing ...',
+                        'TestActionable::LoggingAction : succeed | message : Completed successfully.',
+                        'TestActionable::LoggingAction : run | result : success : Completed successfully.'
+          end
+          it { subject }
         end
       end
     end
