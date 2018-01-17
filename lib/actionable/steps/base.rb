@@ -15,9 +15,9 @@ module Actionable
       private
 
       def skip?(instance)
-        if @options[:if]
+        if @options.key?(:if)
           !run_condition(instance, @options[:if])
-        elsif @options[:unless]
+        elsif @options.key?(:unless)
           !!run_condition(instance, @options[:unless])
         else
           false

@@ -36,6 +36,10 @@ module TestActionable
     def add_ten
       @number += 10
     end
+
+    def odd?
+      @number.odd?
+    end
   end
 
   class GreatAction < BaseAction
@@ -55,6 +59,16 @@ module TestActionable
 
   class ComposedAction < BaseAction
     step SmallAction, params: [:number]
+    step :add_five
+  end
+
+  class FailOnAddAction < BaseAction
+    action :add_three
+    action :fail_on_six
+  end
+
+  class ComposedConditionalAction < BaseAction
+    step FailOnAddAction, params: [:number], if: :odd?
     step :add_five
   end
 
