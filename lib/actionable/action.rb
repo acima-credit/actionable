@@ -92,7 +92,7 @@ module Actionable
         return unless action_logger
 
         msg = format str, *args
-        msg = format '%s : %s | %s', self.class.name, caller(1).first[/`.*'/][1..-2], msg
+        msg = format '%s : %s | %s', name, caller(1).first[/`.*'/][1..-2], msg
         action_logger.send action_logger_severity, msg
       end
     end
