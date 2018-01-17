@@ -107,3 +107,6 @@ Style/MethodMissing:
 
 Style/SignalException:
   Enabled: false
+
+Performance/Caller:
+  Enabled: false

@@ -12,6 +12,12 @@ module Actionable
         return if skip?(instance)
       end
 
+      def to_s
+        format '#<%s name=%s, options=%s>', self.class.name, name.inspect, options.inspect
+      end
+
+      alias inspect to_s
+
       private
 
       def skip?(instance)

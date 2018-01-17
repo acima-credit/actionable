@@ -19,28 +19,35 @@ module Actionable
         @always_steps ||= Set.new
       end
 
+      def add_step(type, step)
+        added = send(type).add? step
+        return unless added
+
+        log_action '%s : %s : %s', type, step.name, step.options.inspect
+      end
+
       def step(name, options = {})
-        steps.add Steps.build(name, options)
+        add_step :steps, Steps.build(name, options)
       end
 
       alias action step
 
       def case_step(name, options = {}, &blk)
-        steps.add Steps::Case.new(name, options, &blk)
+        add_step :steps, Steps::Case.new(name, options, &blk)
       end
 
       alias case_action case_step
 
       def on_success(name, options = {})
-        success_steps.add Steps.build(name, options)
+        add_step :success_steps, Steps.build(name, options)
       end
 
       def on_failure(name, options = {})
-        failure_steps.add Steps.build(name, options)
+        add_step :failure_steps, Steps.build(name, options)
       end
 
       def always(name, options = {})
-        always_steps.add Steps.build(name, options)
+        add_step :always_steps, Steps.build(name, options)
       end
 
       def set_model(name = :nothing)
@@ -57,6 +64,8 @@ module Actionable
 
       def inherited(subclass)
         subclass.set_model @model_name if @model_name
+        subclass.action_logger @action_logger if @action_logger
+        subclass.action_logger_severity @action_logger_severity if @action_logger_severity
       end
 
       def run(*args, &blk)
@@ -67,6 +76,24 @@ module Actionable
 
       def action_name
         name.underscore
+      end
+
+      def action_logger(value = :not_set)
+        @action_logger = value unless value == :not_set
+        @action_logger
+      end
+
+      def action_logger_severity(value = :not_set)
+        @action_logger_severity = value unless value == :not_set
+        @action_logger_severity || :debug
+      end
+
+      def log_action(str, *args)
+        return unless action_logger
+
+        msg = format str, *args
+        msg = format '%s : %s | %s', name, caller(1).first[/`.*'/][1..-2], msg
+        action_logger.send action_logger_severity, msg
       end
     end
 
@@ -80,6 +107,7 @@ module Actionable
 
     def succeed(message = DEFAULT_SUCCESS_MESSAGE, code = :success, errors: {})
       @result = Success.new code: code, message: message, errors: errors, fixtures: fixtures
+      log_action 'message : %s', message
       false
     end
 
@@ -90,6 +118,7 @@ module Actionable
 
     def fail(code, message = nil, errors = {})
       @result = Failure.new code: code, message: message, errors: errors, fixtures: fixtures
+      log_action 'code : %s | message : %s | errors : %s', code, message, errors.inspect
       false
     end
 
@@ -117,6 +146,24 @@ module Actionable
 
     def update_fixtures(fields = {})
       fields.each { |k, v| instance_variable_set "@#{k}", v }
+    end
+
+    def log_action(str, *args)
+      return unless action_logger
+
+      msg = format str, *args
+      msg = format '%s : %s | %s', self.class.name, caller(1).first[/`.*'/][1..-2], msg
+      action_logger.send action_logger_severity, msg
+    end
+
+    private
+
+    def action_logger
+      self.class.action_logger
+    end
+
+    def action_logger_severity
+      self.class.action_logger_severity
     end
   end
 end

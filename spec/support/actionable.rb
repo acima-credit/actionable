@@ -1,4 +1,16 @@
 module TestActionable
+  def self.logger
+    @logger ||= Logger.new(STDOUT).tap { |x| x.level = Logger::FATAL }
+  end
+
+  module Helpers
+    def expect_logs(meth, *lines)
+      lines.each do |line|
+        expect(TestActionable.logger).to receive(meth).with(line)
+      end
+    end
+  end
+
   class BaseAction < Actionable::Action
     set_model :invoice
 
@@ -7,38 +19,56 @@ module TestActionable
     def initialize(number)
       super()
       @number = number
+      log_action '@number = %i', @number
     end
 
     def fail_for_2
-      fail :bad_number, 'Wrong number' if @number == 2
+      return unless @number == 2
+
+      log_action 'failing for 2 ...'
+      fail :bad_number, 'Wrong number'
     end
 
     def fail_on_six
-      fail :bad_number, 'Six is always wrong', a: 1 if @number == 6
+      return unless @number == 6
+
+      log_action 'failing for 6 ...'
+      fail :bad_number, 'Six is always wrong', a: 1
     end
 
     def add_one
+      log_action '%i + %i = %i', @number, 1, @number + 1
       @number += 1
     end
 
     def add_two
+      log_action '%i + %i = %i', @number, 2, @number + 2
       @number += 2
     end
 
     def add_three
+      log_action '%i + %i = %i', @number, 3, @number + 3
       @number += 3
     end
 
     def add_five
+      log_action '%i + %i = %i', @number, 5, @number + 5
       @number += 5
     end
 
     def add_ten
+      log_action '%i + %i = %i', @number, 10, @number + 10
       @number += 10
     end
 
     def odd?
+      log_action 'res : %s', @number.odd?
       @number.odd?
+    end
+
+    def is_three?
+      log_action 'res : %s', @number == 3
+      @number == 3
     end
   end
 
@@ -95,11 +125,7 @@ module TestActionable
 
   class ConditionalAction < BaseAction
     step :add_one, if: lambda { |x| x.number == 1 }
-    step :add_three, unless: :is_three
-
-    def is_three
-      number == 3
-    end
+    step :add_three, unless: :is_three?
   end
 
   class CaseAction < BaseAction
@@ -143,6 +169,14 @@ module TestActionable
     def ok_for_others
       @final += ' > ok'
     end
+  end
+
+  class LoggingAction < BaseAction
+    action_logger TestActionable.logger
+    action_logger_severity :info
+
+    step :add_one
+    step :add_two
   end
 
   class Post
@@ -201,4 +235,8 @@ module TestActionable
   class WrongPostValidator < Actionable::ProxyValidator
     set_model BadPost
   end
+end
+
+RSpec.configure do |config|
+  config.include TestActionable::Helpers
 end

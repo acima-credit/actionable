@@ -198,7 +198,7 @@ module Actionable
                   with backtrace:
                     matchers_spec.rb:51 in `raise_always'
                     method.rb:7 in `run'
-                    action_runner.rb:40 in `run_step'
+                    action_runner.rb:42 in `run_step'
             MSG
           end
           it('matches') { expect(matched).to be_falsey }
@@ -215,7 +215,7 @@ module Actionable
                   with backtrace:
                     matchers_spec.rb:51 in `raise_always'
                     method.rb:7 in `run'
-                    action_runner.rb:40 in `run_step'
+                    action_runner.rb:42 in `run_step'
             MSG
           end
           it('matches') { expect(matched).to be_falsey }
@@ -232,7 +232,7 @@ module Actionable
                   with backtrace:
                     matchers_spec.rb:51 in `raise_always'
                     method.rb:7 in `run'
-                    action_runner.rb:40 in `run_step'
+                    action_runner.rb:42 in `run_step'
             MSG
           end
           it('matches') { expect(matched).to be_falsey }
@@ -261,7 +261,7 @@ module Actionable
                   with backtrace:
                     matchers_spec.rb:51 in `raise_always'
                     method.rb:7 in `run'
-                    action_runner.rb:40 in `run_step'
+                    action_runner.rb:42 in `run_step'
             MSG
           end
           it('matches') { expect(matched).to be_falsey }
@@ -278,7 +278,7 @@ module Actionable
                   with backtrace:
                     matchers_spec.rb:51 in `raise_always'
                     method.rb:7 in `run'
-                    action_runner.rb:40 in `run_step'
+                    action_runner.rb:42 in `run_step'
             MSG
           end
           it('matches') { expect(matched).to be_falsey }
@@ -296,7 +296,7 @@ module Actionable
                   with backtrace:
                     matchers_spec.rb:51 in `raise_always'
                     method.rb:7 in `run'
-                    action_runner.rb:40 in `run_step'
+                    action_runner.rb:42 in `run_step'
             MSG
           end
           it('matches') { expect(matched).to be_falsey }
