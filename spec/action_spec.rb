@@ -9,6 +9,16 @@ module Actionable
       it { expect(klass.steps.map(&:name)).to eq %w[fail_for_2 add_one add_two] }
       it { expect(klass.method(:call)).to eq klass.method(:run) }
       it { expect(klass.action_name).to eq 'test_actionable/great_action' }
+
+      context 'with a step added more than once' do
+        before do
+          10.times do
+            klass.step(:fail_for_2)
+          end
+        end
+
+        it { expect(klass.steps.map(&:name)).to eq %w[fail_for_2 add_one add_two] }
+      end
     end
     context 'result' do
       let(:klass) { TestActionable::GreatAction }
