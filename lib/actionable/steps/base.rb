@@ -18,6 +18,18 @@ module Actionable
 
       alias inspect to_s
 
+      # redefine equality using #eql? and #hash to get valid uniqueness checks
+      def eql?(other)
+        self.class == other.class && self.name == other.name
+      end
+
+      alias == eql?
+      alias equal? eql?
+
+      def hash
+        [self.class.name, self.name].hash
+      end
+
       private
 
       def skip?(instance)
