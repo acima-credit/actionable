@@ -1,6 +1,9 @@
+# frozen_string_literal: true
+
 require 'set'
 require 'delegate'
 
+require 'json'
 require 'active_model'
 
 require 'active_support/core_ext/string/inflections'
@@ -12,6 +15,7 @@ require 'actionable/version'
 require 'actionable/exceptions'
 require 'actionable/results'
 require 'actionable/steps'
+require 'actionable/history'
 require 'actionable/action_runner'
 require 'actionable/action'
 

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Actionable
   class Steps
     class Base
@@ -20,14 +22,14 @@ module Actionable
 
       # redefine equality using #eql? and #hash to get valid uniqueness checks
       def eql?(other)
-        self.class == other.class && self.name == other.name
+        self.class == other.class && name == other.name
       end
 
       alias == eql?
       alias equal? eql?
 
       def hash
-        [self.class.name, self.name].hash
+        [self.class.name, name].hash
       end
 
       private

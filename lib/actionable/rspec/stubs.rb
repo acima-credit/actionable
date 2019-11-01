@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'actionable/rspec/matchers'
 
 module Actionable

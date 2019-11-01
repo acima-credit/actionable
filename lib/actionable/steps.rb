@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'actionable/steps/base'
 require 'actionable/steps/method'
 require 'actionable/steps/action'

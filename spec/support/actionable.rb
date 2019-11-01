@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module TestActionable
   def self.logger
     @logger ||= Logger.new(STDOUT).tap { |x| x.level = Logger::FATAL }
@@ -73,6 +75,7 @@ module TestActionable
   end
 
   class GreatAction < BaseAction
+    measure :all
     step :fail_for_2
     step :add_one
     step :add_two
@@ -83,11 +86,13 @@ module TestActionable
   end
 
   class SmallAction < BaseAction
+    measure :all
     action :fail_on_six
     action :add_three
   end
 
   class ComposedAction < BaseAction
+    measure :all
     step SmallAction, params: [:number]
     step :add_five
   end

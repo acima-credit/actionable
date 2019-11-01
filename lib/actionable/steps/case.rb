@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Actionable
   class Steps
     class Case < Base
@@ -27,6 +29,8 @@ module Actionable
         end
 
         @default_step.run instance if @default_step && !ran
+
+        instance.result&.code || :unknown
       end
 
       private

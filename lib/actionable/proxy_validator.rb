@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Actionable
   class ProxyValidator < SimpleDelegator
     include ActiveModel::Validations
@@ -21,16 +23,16 @@ module Actionable
         new(instance).valid?
       end
 
-      def method_missing(m, *args, &block)
-        if model.respond_to?(m)
-          model.__send__(m, *args, &block)
+      def method_missing(meth, *args, &block)
+        if model.respond_to?(meth)
+          model.__send__(meth, *args, &block)
         else
-          super(m, *args, &block)
+          super(meth, *args, &block)
         end
       end
 
-      def respond_to_missing?(m, include_private)
-        model.respond_to?(m, include_private) || super
+      def respond_to_missing?(meth, include_private)
+        model.respond_to?(meth, include_private) || super
       end
     end
 

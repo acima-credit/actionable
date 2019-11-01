@@ -22,6 +22,7 @@ Metrics/LineLength:
   Max: 120
   Exclude:
     - db/**/*.rb
+    - spec/**/*_spec.rb
 
 Metrics/MethodLength:
   CountComments: false
@@ -33,7 +34,7 @@ Style/GuardClause:
   Exclude:
     - "*.gemspec"
 
-Style/AccessorMethodName:
+Naming/AccessorMethodName:
   Enabled: false
 
 Metrics/BlockLength:
@@ -102,11 +103,17 @@ Style/TrivialAccessors:
 Layout/AlignHash:
   EnforcedColonStyle: key
 
-Style/MethodMissing:
+Style/MethodMissingSuper:
+  Enabled: false
+
+Style/MissingRespondToMissing:
   Enabled: false
 
 Style/SignalException:
   Enabled: false
 
-Performance/Caller:
+Style/FormatStringToken:
+  Enabled: false
+
+Lint/EnsureReturn:
   Enabled: false

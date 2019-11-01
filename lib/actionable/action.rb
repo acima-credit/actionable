@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Actionable
   class Action
     class << self
@@ -62,6 +64,11 @@ module Actionable
 
       alias transactional_model model
 
+      def measure(value = :nil)
+        @measure = value.to_sym unless value == :nil
+        @measure || :none
+      end
+
       def inherited(subclass)
         subclass.set_model @model_name if @model_name
         subclass.action_logger @action_logger if @action_logger
@@ -97,16 +104,21 @@ module Actionable
       end
     end
 
-    attr_reader :result
+    attr_reader :result, :history
 
     def initialize
       @result = nil
+      @history = History.new
     end
 
-    DEFAULT_SUCCESS_MESSAGE = 'Completed successfully.'.freeze
+    DEFAULT_SUCCESS_MESSAGE = 'Completed successfully.'
 
     def succeed(message = DEFAULT_SUCCESS_MESSAGE, code = :success, errors: {})
-      @result = Success.new code: code, message: message, errors: errors, fixtures: fixtures
+      @result = Success.new code: code,
+                            message: message,
+                            errors: errors,
+                            fixtures: fixtures,
+                            history: history
       log_action 'message : %s', message
       false
     end
@@ -117,18 +129,21 @@ module Actionable
     end
 
     def fail(code, message = nil, errors = {})
-      @result = Failure.new code: code, message: message, errors: errors, fixtures: fixtures
+      @result = Failure.new code: code,
+                            message: message,
+                            errors: errors,
+                            fixtures: fixtures,
+                            history: history
       log_action 'code : %s | message : %s | errors : %s', code, message, errors.inspect
       false
     end
 
-    # rubocop:disable UnreachableCode
+    # rubocop:disable Lint/UnreachableCode
     def fail!(*args)
       fail(*args)
       raise FailureError, @result.message
     end
-
-    # rubocop:enable UnreachableCode
+    # rubocop:enable Lint/UnreachableCode
 
     def finished?
       @result.present?
@@ -140,7 +155,7 @@ module Actionable
 
     def fixtures
       instance_values.
-        select { |k, _| k != 'result' || k.start_with?('_') }.
+        reject { |k, _| k == 'result' || k == 'history' || k.start_with?('_') }.
         with_indifferent_access
     end
 
