@@ -11,7 +11,7 @@ module Actionable
       end
 
       def run(_)
-        return if skip?(instance)
+        raise "must implement run in #{self.class.name}"
       end
 
       def to_s

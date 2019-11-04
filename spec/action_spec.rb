@@ -97,9 +97,23 @@ module Actionable
               it('section') { expect(subject.history.map(&:section)).to eq(%i[main main]) }
               it('name   ') { expect(subject.history.map(&:name)).to eq(%w[test_actionable/small_action add_five]) }
               it('time   ') { expect(subject.history.map { |x| x.start_time.to_s[0, 19] }.uniq).to eq([Time.now.to_s[0, 19]]) }
-              it('took   ') { expect(subject.history.map(&:took).all? { |x| x > 0.0 && x < 0.001 }).to eq true }
+              it('took   ') { expect(subject.history.map(&:took).all? { |x| x > 0.0 && x < 0.01 }).to eq true }
               it('code   ') { expect(subject.history.map(&:code)).to eq(%i[success na]) }
-              it('history') { expect(subject.history.map(&:history)).to eq([nil, nil]) }
+              context 'nested' do
+                let(:nested) { subject.history.map(&:history) }
+                let(:first) { nested.first }
+                let(:last) { nested.last }
+                it { expect(nested.size).to eq 2 }
+                it 'first' do
+                  expect(first).to be_a Actionable::History
+                  expect(first.map(&:section)).to eq %i[main main]
+                  expect(first.map(&:name)).to eq %w[fail_on_six add_three]
+                  expect(first.map { |x| x.start_time.to_s[0, 19] }.uniq).to eq([Time.now.to_s[0, 19]])
+                  expect(first.map(&:took).all? { |x| x > 0.0 && x < 0.001 }).to eq true
+                  expect(first.map(&:code)).to eq %i[na na]
+                end
+                it('last') { expect(last).to eq nil }
+              end
             end
           end
           context 'failure' do
@@ -116,7 +130,19 @@ module Actionable
               it('time   ') { expect(subject.history.map { |x| x.start_time.to_s[0, 19] }.uniq).to eq([Time.now.to_s[0, 19]]) }
               it('took   ') { expect(subject.history.map(&:took).all? { |x| x > 0.0 && x < 0.01 }).to eq true }
               it('code   ') { expect(subject.history.map(&:code)).to eq([:fail]) }
-              it('history') { expect(subject.history.map(&:history)).to eq([nil]) }
+              context 'nested' do
+                let(:nested) { subject.history.map(&:history) }
+                let(:first) { nested.first }
+                it { expect(nested.size).to eq 1 }
+                it 'first' do
+                  expect(first).to be_a Actionable::History
+                  expect(first.map(&:section)).to eq %i[main]
+                  expect(first.map(&:name)).to eq %w[fail_on_six]
+                  expect(first.map { |x| x.start_time.to_s[0, 19] }.uniq).to eq([Time.now.to_s[0, 19]])
+                  expect(first.map(&:took).all? { |x| x > 0.0 && x < 0.001 }).to eq true
+                  expect(first.map(&:code)).to eq %i[bad_number]
+                end
+              end
             end
           end
         end

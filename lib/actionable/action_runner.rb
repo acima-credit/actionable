@@ -43,23 +43,23 @@ module Actionable
     def run_step(section, step)
       measure section, step, :start
       exc = nil
-      res = step.run @instance
+      code, res = step.run @instance
     rescue SkippableError
-      res = :skippable_error
+      code = :skippable_error
     rescue StandardError => e
       exc = e
-      res = :exception
+      code = :exception
     ensure
-      measure section, step, :stop, res
+      measure section, step, :stop, code, res
       raise exc if exc
 
       return res
     end
 
-    def measure(section, step, event, code = nil)
+    def measure(section, step, event, code = nil, res = nil)
       return if @klass.measure == :none
 
-      @instance.history.measure section, step, event, code, step.respond_to?(:history) ? step.history : nil
+      @instance.history.measure section, step, event, code, res.respond_to?(:history) ? res.history : nil
     end
 
     def run_through_main_steps

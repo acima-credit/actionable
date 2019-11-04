@@ -54,16 +54,16 @@ module Actionable
       @steps = {}
     end
 
-    def measure(section, step, event, code = nil, nested_history = nil)
+    def measure(section, step, event, code = nil, history = nil)
       case event
       when :start
         start section, step
       when :stop
-        stop section, step, code, nested_history
+        stop section, step, code, history
       end
     end
 
-    delegate :keys, :values, to: :@steps
+    delegate :keys, :values, :size, to: :@steps
     delegate :map, :select, :find, to: :values
 
     def step_names
@@ -74,8 +74,8 @@ module Actionable
       map(&:as_json)
     end
 
-    def to_json(*_args)
-      JSON.generate as_json
+    def to_json(options = {})
+      JSON.generate as_json, options
     end
 
     private

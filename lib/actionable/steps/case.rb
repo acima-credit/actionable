@@ -30,7 +30,7 @@ module Actionable
 
         @default_step.run instance if @default_step && !ran
 
-        instance.result&.code || :unknown
+        [instance.result&.code || :unknown, nil]
       end
 
       private
