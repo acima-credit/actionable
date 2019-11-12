@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Actionable
   class Failure < Result
     def formatted_errors(join_str = ', ')

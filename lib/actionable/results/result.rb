@@ -1,12 +1,15 @@
+# frozen_string_literal: true
+
 module Actionable
   class Result
-    attr_reader :code, :message, :errors, :fixtures
+    attr_reader :code, :message, :errors, :fixtures, :history
 
     def initialize(fields = {})
       @code         = (fields[:code] || default_code).to_sym
       @message      = (fields[:message] || '').to_s
       self.errors   = fields[:errors]
       self.fixtures = (fields[:fixtures] || {}).to_hash
+      @history      = fields[:history]
     end
 
     def default_code
@@ -34,11 +37,11 @@ module Actionable
     end
 
     def respond_to?(method, _ = false)
-      (fixtures && fixtures.key?(method)) || super
+      (fixtures&.key?(method)) || super
     end
 
     def method_missing(method, *_, &blk)
-      return super unless fixtures && fixtures.key?(method)
+      return super unless fixtures&.key?(method)
 
       fixtures[method]
     end

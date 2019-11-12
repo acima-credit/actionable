@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'actionable'
 
 module Actionable
@@ -6,7 +8,7 @@ module Actionable
       PerformActionableMatcher.new(*args)
     end
 
-    # rubocop:disable ClassLength
+    # rubocop:disable Metrics/ClassLength
     class PerformActionableMatcher
       attr_reader :type, :matched
 
@@ -200,7 +202,7 @@ module Actionable
         messages
       end
     end
-    # rubocop:enable ClassLength
+    # rubocop:enable Metrics/ClassLength
   end
 end
 

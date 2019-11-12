@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Actionable
   class Steps
     class Action < Base
@@ -7,14 +9,15 @@ module Actionable
       end
 
       def run(instance)
-        return if skip?(instance)
+        return [:skip, nil] if skip?(instance)
 
         result   = run_action instance
         fixtures = select_fixtures result.fixtures
         instance.update_fixtures fixtures
-        return if result.success?
+        return [:success, result] if result.success?
 
         instance.fail result.code, result.message, result.errors
+        [:fail, result]
       end
 
       private

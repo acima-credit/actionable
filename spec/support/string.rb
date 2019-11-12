@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class String
   # From https://raw2.github.com/mynyml/unindent/master/lib/unindent.rb
   def unindent

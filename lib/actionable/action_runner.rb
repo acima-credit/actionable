@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Actionable
   class ActionRunner
     def initialize(klass)
@@ -38,10 +40,26 @@ module Actionable
       yield_on_success(&blk)
     end
 
-    def run_step(step)
-      step.run @instance
-    rescue SkippableError => e
-      @instance.log_action 'step : %s : skippable error : %s : %s', step.name, e.class.name, e.message
+    def run_step(section, step)
+      measure section, step, :start
+      exc = nil
+      code, res = step.run @instance
+    rescue SkippableError
+      code = :skippable_error
+    rescue StandardError => e
+      exc = e
+      code = :exception
+    ensure
+      measure section, step, :stop, code, res
+      raise exc if exc
+
+      return res
+    end
+
+    def measure(section, step, event, code = nil, res = nil)
+      return if @klass.measure == :none
+
+      @instance.history.measure section, step, event, code, res.respond_to?(:history) ? res.history : nil
     end
 
     def run_through_main_steps
@@ -52,7 +70,7 @@ module Actionable
         end
 
         @instance.log_action '%s : start ...', step.name
-        run_step step
+        run_step :main, step
       end
     end
 
@@ -68,7 +86,7 @@ module Actionable
 
       @klass.success_steps.each do |step|
         @instance.log_action '%s : start ...', step.name
-        run_step step
+        run_step :success, step
         @instance.result.fixtures = @instance.fixtures
       end
     end
@@ -85,7 +103,7 @@ module Actionable
 
       @klass.failure_steps.each do |step|
         @instance.log_action '%s : start ...', step.name
-        run_step step
+        run_step :failure, step
         @instance.result.fixtures = @instance.fixtures
       end
     end
@@ -93,7 +111,7 @@ module Actionable
     def run_through_always_steps
       @klass.always_steps.each do |step|
         @instance.log_action '%s : start ...', step.name
-        run_step step
+        run_step :always, step
         @instance.result.fixtures = @instance.fixtures
       end
     end

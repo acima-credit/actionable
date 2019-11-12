@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 module Actionable
@@ -196,9 +198,9 @@ module Actionable
                 but a StandardError exception was raised
                   with message "something went wrong"
                   with backtrace:
-                    matchers_spec.rb:51 in `raise_always'
-                    method.rb:7 in `run'
-                    action_runner.rb:42 in `run_step'
+                    matchers_spec.rb:53 in `raise_always'
+                    method.rb:9 in `run'
+                    action_runner.rb:46 in `run_step'
             MSG
           end
           it('matches') { expect(matched).to be_falsey }
@@ -213,9 +215,9 @@ module Actionable
                 but a StandardError exception was raised
                   with message "something went wrong"
                   with backtrace:
-                    matchers_spec.rb:51 in `raise_always'
-                    method.rb:7 in `run'
-                    action_runner.rb:42 in `run_step'
+                    matchers_spec.rb:53 in `raise_always'
+                    method.rb:9 in `run'
+                    action_runner.rb:46 in `run_step'
             MSG
           end
           it('matches') { expect(matched).to be_falsey }
@@ -230,9 +232,9 @@ module Actionable
                 but a StandardError exception was raised
                   with message "something went wrong"
                   with backtrace:
-                    matchers_spec.rb:51 in `raise_always'
-                    method.rb:7 in `run'
-                    action_runner.rb:42 in `run_step'
+                    matchers_spec.rb:53 in `raise_always'
+                    method.rb:9 in `run'
+                    action_runner.rb:46 in `run_step'
             MSG
           end
           it('matches') { expect(matched).to be_falsey }
@@ -259,9 +261,9 @@ module Actionable
                 and although an exception was raised
                   the class was StandardError
                   with backtrace:
-                    matchers_spec.rb:51 in `raise_always'
-                    method.rb:7 in `run'
-                    action_runner.rb:42 in `run_step'
+                    matchers_spec.rb:53 in `raise_always'
+                    method.rb:9 in `run'
+                    action_runner.rb:46 in `run_step'
             MSG
           end
           it('matches') { expect(matched).to be_falsey }
@@ -276,9 +278,9 @@ module Actionable
                 and although an exception was raised
                   the message was "something went wrong"
                   with backtrace:
-                    matchers_spec.rb:51 in `raise_always'
-                    method.rb:7 in `run'
-                    action_runner.rb:42 in `run_step'
+                    matchers_spec.rb:53 in `raise_always'
+                    method.rb:9 in `run'
+                    action_runner.rb:46 in `run_step'
             MSG
           end
           it('matches') { expect(matched).to be_falsey }
@@ -294,9 +296,9 @@ module Actionable
                   the class was StandardError
                   the message was "something went wrong"
                   with backtrace:
-                    matchers_spec.rb:51 in `raise_always'
-                    method.rb:7 in `run'
-                    action_runner.rb:42 in `run_step'
+                    matchers_spec.rb:53 in `raise_always'
+                    method.rb:9 in `run'
+                    action_runner.rb:46 in `run_step'
             MSG
           end
           it('matches') { expect(matched).to be_falsey }
