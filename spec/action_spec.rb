@@ -40,6 +40,10 @@ module Actionable
           it('type   ') { expect(subject.history).to be_a Actionable::History }
           it('section') { expect(subject.history.map(&:section)).to eq(%i[main main main]) }
           it('name   ') { expect(subject.history.map(&:name)).to eq(%w[fail_for_2 add_one add_two]) }
+          it('[name1]') { expect(subject.history['fail_for_2']).to be_a Actionable::History::Step }
+          it('[name2]') { expect(subject.history[:add_one]).to be_a Actionable::History::Step }
+          it('[name3]') { expect(subject.history['add_two']).to be_a Actionable::History::Step }
+          it('[name4]') { expect(subject.history[:unknown]).to eq nil }
           it('time   ') { expect(subject.history.map { |x| x.start_time.to_s[0, 19] }.uniq).to eq([Time.now.to_s[0, 19]]) }
           it('took   ') { expect(subject.history.map(&:took).all? { |x| x > 0.0 && x < 0.0002 }).to eq true }
           it('code   ') { expect(subject.history.map(&:code)).to eq(%i[na na na]) }
