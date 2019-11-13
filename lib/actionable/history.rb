@@ -51,7 +51,7 @@ module Actionable
     end
 
     def initialize
-      @steps = {}
+      @steps = HashWithIndifferentAccess.new
     end
 
     def measure(section, step, event, code = nil, history = nil)
@@ -63,7 +63,7 @@ module Actionable
       end
     end
 
-    delegate :keys, :values, :size, to: :@steps
+    delegate :keys, :values, :size, :[], to: :@steps
     delegate :map, :select, :find, to: :values
 
     def step_names
