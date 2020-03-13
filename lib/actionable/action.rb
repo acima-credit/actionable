@@ -64,6 +64,18 @@ module Actionable
 
       alias transactional_model model
 
+      def default_transaction_options
+        { requires_new: true }
+      end
+
+      def set_transaction_options(options = {})
+        @transaction_options = default_transaction_options.merge(options)
+      end
+
+      def transaction_options
+        @transaction_options ? @transaction_options : default_transaction_options
+      end
+
       def measure(value = :nil)
         @measure = value.to_sym unless value == :nil
         @measure || :none
@@ -71,6 +83,7 @@ module Actionable
 
       def inherited(subclass)
         subclass.set_model @model_name if @model_name
+        subclass.set_transaction_options @transaction_options if @transaction_options
         subclass.action_logger @action_logger if @action_logger
         subclass.action_logger_severity @action_logger_severity if @action_logger_severity
       end

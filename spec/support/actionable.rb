@@ -81,6 +81,11 @@ module TestActionable
     step :add_two
   end
 
+  class DisableDefaultTransactionOptions < BaseAction
+    set_transaction_options(requires_new: false)
+    action :add_ten
+  end
+
   class AddTwo < BaseAction
     step :add_two
   end

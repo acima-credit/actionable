@@ -51,6 +51,7 @@ module Actionable
         end
         it do
           msg = nil
+          expect(Invoice).to receive(:transaction).with(requires_new: true).and_call_original
           klass.run(number) { |x| msg = x.message }
           expect(msg).to eq 'Completed successfully.'
         end
@@ -297,6 +298,15 @@ module Actionable
           end
           it { subject }
         end
+      end
+    end
+    context "disable default transaction options" do
+      let(:klass) { TestActionable::DisableDefaultTransactionOptions }
+      let(:number) { 1 }
+      subject { klass.run number }
+      it "calls transaction with requires_new: false" do
+        expect(Invoice).to receive(:transaction).with(requires_new: false).and_call_original
+        subject
       end
     end
   end
