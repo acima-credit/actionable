@@ -51,7 +51,7 @@ module Actionable
         end
         it do
           msg = nil
-          expect(Invoice).to receive(:transaction).with(requires_new: true).and_call_original
+          expect(Invoice).to receive(:transaction).with({}).and_call_original
           klass.run(number) { |x| msg = x.message }
           expect(msg).to eq 'Completed successfully.'
         end
@@ -300,12 +300,21 @@ module Actionable
         end
       end
     end
-    context "disable default transaction options" do
-      let(:klass) { TestActionable::DisableDefaultTransactionOptions }
+    context "set explicit transaction options" do
+      let(:klass) { TestActionable::ExplicitTransactionOptions }
       let(:number) { 1 }
       subject { klass.run number }
-      it "calls transaction with requires_new: false" do
-        expect(Invoice).to receive(:transaction).with(requires_new: false).and_call_original
+      it "calls transaction with requires_new: true" do
+        expect(Invoice).to receive(:transaction).with(requires_new: true).and_call_original
+        subject
+      end
+    end
+    context "with set_safely_nesting_transactional_model" do
+      let(:klass) { TestActionable::ExplicitTransactionOptions }
+      let(:number) { 1 }
+      subject { klass.run number }
+      it "calls transaction with requires_new: true" do
+        expect(Invoice).to receive(:transaction).with(requires_new: true).and_call_original
         subject
       end
     end

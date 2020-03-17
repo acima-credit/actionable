@@ -56,6 +56,11 @@ module Actionable
         @model_name = name.to_sym
       end
 
+      def set_safely_nesting_transactional_model(name = :nothing)
+        set_model(name)
+        set_transaction_options({ requires_new: true })
+      end
+
       alias set_transactional_model set_model
 
       def model
@@ -64,16 +69,12 @@ module Actionable
 
       alias transactional_model model
 
-      def default_transaction_options
-        { requires_new: true }
-      end
-
       def set_transaction_options(options = {})
-        @transaction_options = default_transaction_options.merge(options)
+        @transaction_options = (@transaction_options || {}).merge(options)
       end
 
       def transaction_options
-        @transaction_options ? @transaction_options : default_transaction_options
+        @transaction_options ? @transaction_options : {}
       end
 
       def measure(value = :nil)
