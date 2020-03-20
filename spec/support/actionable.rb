@@ -81,6 +81,16 @@ module TestActionable
     step :add_two
   end
 
+  class ExplicitTransactionOptions < BaseAction
+    set_transaction_options(requires_new: true)
+    action :add_ten
+  end
+
+  class SafeNestingTransaction < BaseAction
+    set_safely_nesting_transactional_model :invoice
+    action :add_three
+  end
+
   class AddTwo < BaseAction
     step :add_two
   end

@@ -24,7 +24,7 @@ module Actionable
     private
 
     def run_with_transaction(&blk)
-      @klass.model.transaction { run_without_transaction(&blk) }
+      @klass.model.transaction(@klass.transaction_options) { run_without_transaction(&blk) }
     end
 
     def run_without_transaction(&blk)
