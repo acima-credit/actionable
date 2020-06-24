@@ -46,7 +46,7 @@ module Actionable
       code, res = step.run @instance
     rescue SkippableError
       code = :skippable_error
-      # it's bad practice to rescue Exception, but it's preferable in this case because it will be raised in the ensure
+    # it's bad practice to rescue Exception, but it's preferable in this case because it will be raised in the ensure
     rescue Exception => e
       exc = e
       code = :exception
