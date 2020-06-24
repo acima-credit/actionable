@@ -46,13 +46,14 @@ module Actionable
       code, res = step.run @instance
     rescue SkippableError
       code = :skippable_error
-    rescue StandardError => e
+      # it's bad practice to rescue Exception, but it's preferable in this case because it will be raised in the ensure
+    rescue Exception => e
       exc = e
       code = :exception
     ensure
       measure section, step, :stop, code, res
       raise exc if exc
-
+      # this return will swallow Exceptions unless they are explicitly raised in the ensure block
       return res
     end
 
