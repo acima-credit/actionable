@@ -40,6 +40,7 @@ module Actionable
       yield_on_success(&blk)
     end
 
+    # rubocop:disable Lint/RescueException
     def run_step(section, step)
       measure section, step, :start
       exc = nil
@@ -53,9 +54,11 @@ module Actionable
     ensure
       measure section, step, :stop, code, res
       raise exc if exc
+
       # this return will swallow Exceptions unless they are explicitly raised in the ensure block
       return res
     end
+    # rubocop:enable Lint/RescueException
 
     def measure(section, step, event, code = nil, res = nil)
       return if @klass.measure == :none

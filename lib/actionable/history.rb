@@ -70,6 +70,10 @@ module Actionable
       map(&:name)
     end
 
+    def took
+      map(&:took).compact.sum
+    end
+
     def as_json
       map(&:as_json)
     end

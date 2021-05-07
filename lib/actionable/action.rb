@@ -66,7 +66,7 @@ module Actionable
 
       def set_safely_nesting_transactional_model(name = :nothing)
         set_model(name)
-        set_transaction_options({ requires_new: true })
+        set_transaction_options(requires_new: true)
       end
 
       def set_transaction_options(options = {})
@@ -74,7 +74,7 @@ module Actionable
       end
 
       def transaction_options
-        @transaction_options ? @transaction_options : {}
+        @transaction_options || {}
       end
 
       def measure(value = :nil)

@@ -45,7 +45,8 @@ module Actionable
           it('[name3]') { expect(subject.history['add_two']).to be_a Actionable::History::Step }
           it('[name4]') { expect(subject.history[:unknown]).to eq nil }
           it('time   ') { expect(subject.history.map { |x| x.start_time.to_s[0, 19] }.uniq).to eq([Time.now.to_s[0, 19]]) }
-          it('took   ') { expect(subject.history.map(&:took).all? { |x| x > 0.0 && x < 0.0002 }).to eq true }
+          it('took-e ') { expect(subject.history.map(&:took).all? { |x| x > 0.0 && x < 0.0002 }).to eq true }
+          it('took   ') { expect(subject.history.took).to be > 0 }
           it('code   ') { expect(subject.history.map(&:code)).to eq(%i[na na na]) }
           it('history') { expect(subject.history.map(&:history)).to eq([nil, nil, nil]) }
         end
@@ -75,7 +76,8 @@ module Actionable
           it('section') { expect(subject.history.map(&:section)).to eq(%i[main]) }
           it('name   ') { expect(subject.history.map(&:name)).to eq(['fail_for_2']) }
           it('time   ') { expect(subject.history.map { |x| x.start_time.to_s[0, 19] }.uniq).to eq([Time.now.to_s[0, 19]]) }
-          it('took   ') { expect(subject.history.map(&:took).all? { |x| x > 0.0 && x < 0.0002 }).to eq true }
+          it('took-e ') { expect(subject.history.map(&:took).all? { |x| x > 0.0 && x < 0.0002 }).to eq true }
+          it('took   ') { expect(subject.history.took).to be > 0 }
           it('code   ') { expect(subject.history.map(&:code)).to eq([:bad_number]) }
           it('history') { expect(subject.history.map(&:history)).to eq([nil]) }
         end
@@ -102,7 +104,8 @@ module Actionable
               it('section') { expect(subject.history.map(&:section)).to eq(%i[main main]) }
               it('name   ') { expect(subject.history.map(&:name)).to eq(%w[test_actionable/small_action add_five]) }
               it('time   ') { expect(subject.history.map { |x| x.start_time.to_s[0, 19] }.uniq).to eq([Time.now.to_s[0, 19]]) }
-              it('took   ') { expect(subject.history.map(&:took).all? { |x| x > 0.0 && x < 0.01 }).to eq true }
+              it('took-e ') { expect(subject.history.map(&:took).all? { |x| x > 0.0 && x < 0.0002 }).to eq true }
+              it('took   ') { expect(subject.history.took).to be > 0 }
               it('code   ') { expect(subject.history.map(&:code)).to eq(%i[success na]) }
               context 'nested' do
                 let(:nested) { subject.history.map(&:history) }
@@ -133,7 +136,8 @@ module Actionable
               it('section') { expect(subject.history.map(&:section)).to eq(%i[main]) }
               it('name   ') { expect(subject.history.map(&:name)).to eq(%w[test_actionable/small_action]) }
               it('time   ') { expect(subject.history.map { |x| x.start_time.to_s[0, 19] }.uniq).to eq([Time.now.to_s[0, 19]]) }
-              it('took   ') { expect(subject.history.map(&:took).all? { |x| x > 0.0 && x < 0.01 }).to eq true }
+              it('took-e ') { expect(subject.history.map(&:took).all? { |x| x > 0.0 && x < 0.0002 }).to eq true }
+              it('took   ') { expect(subject.history.took).to be > 0 }
               it('code   ') { expect(subject.history.map(&:code)).to eq([:fail]) }
               context 'nested' do
                 let(:nested) { subject.history.map(&:history) }
@@ -300,20 +304,20 @@ module Actionable
         end
       end
     end
-    context "set explicit transaction options" do
+    context 'set explicit transaction options' do
       let(:klass) { TestActionable::ExplicitTransactionOptions }
       let(:number) { 1 }
       subject { klass.run number }
-      it "calls transaction with requires_new: true" do
+      it 'calls transaction with requires_new: true' do
         expect(Invoice).to receive(:transaction).with(requires_new: true).and_call_original
         subject
       end
     end
-    context "with set_safely_nesting_transactional_model" do
+    context 'with set_safely_nesting_transactional_model' do
       let(:klass) { TestActionable::ExplicitTransactionOptions }
       let(:number) { 1 }
       subject { klass.run number }
-      it "calls transaction with requires_new: true" do
+      it 'calls transaction with requires_new: true' do
         expect(Invoice).to receive(:transaction).with(requires_new: true).and_call_original
         subject
       end
