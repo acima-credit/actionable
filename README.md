@@ -2,7 +2,7 @@
 
 ## Simple and effective Ruby service objects. 
 Actionable actions encapsulate business logic in a composable way that makes it easy to change when requirements change.  
-It draws inspiration heavily in Trailblazer's [Operation](http://trailblazer.to/gems/operation/2.0/index.html)s alhtough 
+It draws inspiration heavily on Trailblazer's [Operation](http://trailblazer.to/gems/operation/2.0/index.html) gem although
 it has a much smaller and simple scope. Still it provides the means to remove business logic from places like Rails 
 controllers and models, Sidekiq processors, etc. into a shared set of actions with defined steps.
 
@@ -57,7 +57,7 @@ class CreateInvoice < Actionable::Action
 end
 ```
 
-The basic principle is that once we run an action it will follow through with each step. If no steps declares an early 
+The basic principle is that once we run an action it will follow through with each step. If no steps declare an early 
 success or failure then it will automatically declare success. In any case it will return a result object with some 
  basic properties:
  
@@ -66,8 +66,8 @@ success or failure then it will automatically declare success. In any case it wi
  * `errors`: a hash containing errors (optional).
  
 In the case that any of the steps throws an unguarded exception then processing will stop and the exception will 
-bubble up to be dealt with. If you are setting a model (e.g. `set_model :invoice`) then Actionable will wrap the steps
- execution in an `ActiveRecord::Transaction` so that it will all succeed or nothing will be committed to the database.
+bubble up to be dealt with. If you are setting a model (e.g. `set_model :invoice`) then Actionable will wrap the step's
+execution in an `ActiveRecord::Transaction` so that it will all succeed or nothing will be committed to the database.
 
 Following the previous example we could use that action in a controller like so:
 
@@ -91,13 +91,14 @@ providing the parameters from the user and redirect traffic depending on the res
 contains all `instance variables` created in the process as ready to use methods (e.g. `result.invoice`).
  
 Encapsulating all this business logic also makes it easier to add more features when requirements change. Let's say
- that later we find out that we need to send a notification to our customer. We can easily add another step like so:
+that later we find out that we need to send a notification to our customer. We can easily add another step like so:
  
  ```ruby
 class CreateInvoice < Actionable::Action
-
+  # ...
   step :notify
   
+  # ...
   def notify
     CustomerMailer.send_invoice @invoice  
   end
@@ -122,7 +123,7 @@ class CreateInvoice < Actionable::Action
 end
 ```
 
-An action step can also point to another action to run through all of that action's steps. Maybe we already have an action setup to notify customer's via email and text messages. You can pass parameters, such as the @invoice we've already created in an array of symbols, like so `params: %i[invoice]`
+An action step can also point to another action to run through all of that action's steps. Maybe we already have an action setup to notify customer's via email and text messages. You can pass parameters, such as the `@invoice` we've already created in an array of symbols, like so `params: %i[invoice]`
 
 ```ruby
 class CreateInvoice < Actionable::Action
@@ -207,7 +208,7 @@ class ReceiveAchStatus < ::Actionable::Action
 end
 ```
 
-There are special steps that are only ran if the main steps were successful or if they failed. These are called `success_steps` and `failure_steps`. They work just like any other step, excpet that they are always ran at the end.
+There are special steps that are only run if the main steps were successful or if they failed. These are called `success_steps` and `failure_steps`. They work just like any other step, excpet that they are always run at the end.
 
 ```ruby
 class CreateInvoice < ::Actionable::Action
@@ -307,7 +308,7 @@ result
 # => #<Actionable::Success code=:success, message="Completed successfully.", errors={}, fixtures=["invoice", "params"]>
 ```
 
-To make testing easier, a couple rspec stubs have been added if you require `actionable/rspec/stubs`. The stubs are `stub_actionable_success`/`allow_actionable_success` and `stub_actionable_failure`/`allow_actionable_failure`.
+To make testing easier, a couple of RSpec stubs have been added if you require `actionable/rspec/stubs`. The stubs are `stub_actionable_success`/`allow_actionable_success` and `stub_actionable_failure`/`allow_actionable_failure`.
 
 `stub_actionable_success`/`allow_actionable_success` take the klass and an optional hash of fixtures and will return a success object with the fixtures you specified. `stub_actionable_failure`/`allow_actionable_failure` takes the klass, error_code, optional error_message, and an optional hash of fixtures and will return a failure object with the code, message, and fixtures specified. The stub versions of these run with an expectation that the klass will be called with `run`, while the allow version simply allows it to run if we need it, but isn't required.
 
