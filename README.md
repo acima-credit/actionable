@@ -157,7 +157,7 @@ end
 Finally, by using the `:fixtures` option, you can control which instance variables get sent back when we're calling another actionable action class and are saved in our fixtures and returned.
 
 ```ruby
-class CreateInvoice << Actionable::Action
+class CreateInvoice < Actionable::Action
   step NotifyCustomer, params: %i[invoice], fixtures: %i[email sms]
 end
 
@@ -271,9 +271,9 @@ class CreateInvoice < ::Actionable::Action
   def build
   end
 
-  def vaidate
-    fail :name_invalid, "Name missing" unless @params[:name].present?
+  def validate
     fail! :amount_location, "Amount missing" unless @params[:amount].present?
+    fail :name_invalid, "Name missing" unless @params[:name].present?
   end
 
   def create
