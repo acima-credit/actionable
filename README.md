@@ -275,6 +275,7 @@ class CreateInvoice < ::Actionable::Action
     fail! :amount_location, "Amount missing" unless @params[:amount].present?
     # additional code
     fail :name_invalid, "Name missing" unless @params[:name].present?
+    # this code is still run after a `fail`
   end
 
   def create
