@@ -17,6 +17,7 @@ require 'actionable/results'
 require 'actionable/steps'
 require 'actionable/history'
 require 'actionable/action_runner'
+require 'actionable/registry'
 require 'actionable/action'
 
 module Actionable

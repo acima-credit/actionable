@@ -87,6 +87,7 @@ module Actionable
         subclass.set_transaction_options @transaction_options if @transaction_options
         subclass.action_logger @action_logger if @action_logger
         subclass.action_logger_severity @action_logger_severity if @action_logger_severity
+        Actionable.registry.add subclass
       end
 
       def run(*args, &blk)
