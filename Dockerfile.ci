@@ -1,4 +1,4 @@
-FROM ruby:2.6.3-alpine as base
+FROM ruby:2.7.5-alpine as base
 
 RUN apk update && apk upgrade && apk --no-cache add \
   tzdata \
@@ -9,10 +9,10 @@ RUN apk update && apk upgrade && apk --no-cache add \
   ca-certificates \
   ruby-dev \
   curl-dev \
+  sqlite-dev \
   libffi-dev \
   linux-headers \
   openssh \
-  libsqlite3-dev \
   file \
   && echo ‘gem: --no-document’ > /etc/gemrc
 
@@ -20,6 +20,8 @@ RUN apk update && apk upgrade && apk --no-cache add \
 RUN mkdir -p /root/.ssh && \
   chmod 0700 /root/.ssh && \
   ssh-keyscan github.com > /root/.ssh/known_hosts
+
+RUN gem install bundler -v 2.2.32
 
 ARG PRIVATE
 ARG PUBLIC
