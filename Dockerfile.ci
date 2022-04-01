@@ -12,6 +12,7 @@ RUN apk update && apk upgrade && apk --no-cache add \
   libffi-dev \
   linux-headers \
   openssh \
+  libsqlite3-dev \
   file \
   && echo ‘gem: --no-document’ > /etc/gemrc
 
