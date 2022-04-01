@@ -94,7 +94,7 @@ module Actionable
       end
 
       def passes_exception
-        @exception.present? && @exception.class == @e_klass && pass_exception_message
+        @exception.present? && @exception.instance_of?(@e_klass) && pass_exception_message
       end
 
       def pass_exception_message

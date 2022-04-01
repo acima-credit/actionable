@@ -17,6 +17,8 @@ require 'support/actionable'
 ENV['ACTIONABLE_BACKTRACE_QTY']   ||= '3'
 ENV['ACTIONABLE_SHORT_BACKTRACE'] ||= 'true'
 
+ROOT_PATH = Pathname.new File.expand_path(File.dirname(File.dirname(__FILE__)))
+
 RSpec.configure do |config|
   config.example_status_persistence_file_path = '.rspec_status'
   config.filter_run focus: true if ENV['FOCUS'].to_s == 'true'
@@ -24,7 +26,5 @@ RSpec.configure do |config|
     c.syntax = :expect
   end
 
-  ROOT_PATH = Pathname.new File.expand_path(File.dirname(File.dirname(__FILE__)))
-
-  Dir[ROOT_PATH.join('spec/support/*.rb')].each { |f| require f }
+  Dir[ROOT_PATH.join('spec/support/*.rb')].sort.each { |f| require f }
 end

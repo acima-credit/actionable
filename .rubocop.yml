@@ -117,3 +117,6 @@ Style/FormatStringToken:
 
 Lint/EnsureReturn:
   Enabled: false
+
+Lint/ConstantDefinitionInBlock:
+  Enabled: false

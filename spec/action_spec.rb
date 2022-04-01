@@ -8,7 +8,7 @@ module Actionable
     context 'class' do
       let(:klass) { TestActionable::GreatAction }
       it { expect(klass.model).to eq Invoice }
-      it { expect(klass.steps.map(&:name)).to eq %w[fail_for_2 add_one add_two] }
+      it { expect(klass.steps.map(&:name)).to eq %w[fail_for_two add_one add_two] }
       it { expect(klass.method(:call)).to eq klass.method(:run) }
       it { expect(klass.action_name).to eq 'test_actionable/great_action' }
       it { expect(klass.measure).to eq :all }
@@ -16,11 +16,11 @@ module Actionable
       context 'with a step added more than once' do
         before do
           10.times do
-            klass.step(:fail_for_2)
+            klass.step(:fail_for_two)
           end
         end
 
-        it { expect(klass.steps.map(&:name)).to eq %w[fail_for_2 add_one add_two] }
+        it { expect(klass.steps.map(&:name)).to eq %w[fail_for_two add_one add_two] }
       end
     end
     context 'result' do
@@ -33,14 +33,14 @@ module Actionable
         it { expect(subject.fixtures).to eq('number' => 13) }
         context 'history' do
           # TestActionable::GreatAction : subject.history | [
-          #   ["main", "fail_for_2", "2019-11-01T16:04:42.325-06:00", "0.000010", "na", nil],
+          #   ["main", "fail_for_two", "2019-11-01T16:04:42.325-06:00", "0.000010", "na", nil],
           #   ["main", "add_one", "2019-11-01T16:04:42.325-06:00", "0.000008", "na", nil],
           #   ["main", "add_two", "2019-11-01T16:04:42.325-06:00", "0.000006", "na", nil]
           # ]
           it('type   ') { expect(subject.history).to be_a Actionable::History }
           it('section') { expect(subject.history.map(&:section)).to eq(%i[main main main]) }
-          it('name   ') { expect(subject.history.map(&:name)).to eq(%w[fail_for_2 add_one add_two]) }
-          it('[name1]') { expect(subject.history['fail_for_2']).to be_a Actionable::History::Step }
+          it('name   ') { expect(subject.history.map(&:name)).to eq(%w[fail_for_two add_one add_two]) }
+          it('[name1]') { expect(subject.history['fail_for_two']).to be_a Actionable::History::Step }
           it('[name2]') { expect(subject.history[:add_one]).to be_a Actionable::History::Step }
           it('[name3]') { expect(subject.history['add_two']).to be_a Actionable::History::Step }
           it('[name4]') { expect(subject.history[:unknown]).to eq nil }
@@ -70,11 +70,11 @@ module Actionable
         end
         context 'history' do
           # TestActionable::GreatAction : subject.history | [
-          #   ["main", "fail_for_2", "2019-11-01T16:03:51.757-06:00", "0.000098", "bad_number", nil]
+          #   ["main", "fail_for_two", "2019-11-01T16:03:51.757-06:00", "0.000098", "bad_number", nil]
           # ]
           it('type   ') { expect(subject.history).to be_a Actionable::History }
           it('section') { expect(subject.history.map(&:section)).to eq(%i[main]) }
-          it('name   ') { expect(subject.history.map(&:name)).to eq(['fail_for_2']) }
+          it('name   ') { expect(subject.history.map(&:name)).to eq(['fail_for_two']) }
           it('time   ') { expect(subject.history.map { |x| x.start_time.to_s[0, 19] }.uniq).to eq([Time.now.to_s[0, 19]]) }
           it('took-e ') { expect(subject.history.map(&:took).all? { |x| x > 0.0 && x < 0.0002 }).to eq true }
           it('took   ') { expect(subject.history.took).to be > 0 }
@@ -240,7 +240,7 @@ module Actionable
     context 'final' do
       let(:klass) { TestActionable::FinalAction }
       context 'class' do
-        it { expect(klass.steps.map(&:name)).to eq %w[add_one fail_for_2] }
+        it { expect(klass.steps.map(&:name)).to eq %w[add_one fail_for_two] }
         it { expect(klass.success_steps.map(&:name)).to eq %w[add_two] }
         it { expect(klass.failure_steps.map(&:name)).to eq %w[add_three] }
         it { expect(klass.always_steps.map(&:name)).to eq %w[add_five] }

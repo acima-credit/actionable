@@ -17,6 +17,7 @@ module Actionable
           succeed 'I win!'
         end
       end
+
       class SuccessNoMessageExample < Action
         action :nothing_special
 
@@ -29,6 +30,7 @@ module Actionable
           @ok = true
         end
       end
+
       class FailureExample < Action
         action :fail_always
 
@@ -41,6 +43,7 @@ module Actionable
           fail :my_bad, 'I failed!'
         end
       end
+
       class ExceptionExample < Action
         action :raise_always
 
@@ -198,7 +201,7 @@ module Actionable
                 but a StandardError exception was raised
                   with message "something went wrong"
                   with backtrace:
-                    matchers_spec.rb:53 in `raise_always'
+                    matchers_spec.rb:56 in `raise_always'
                     method.rb:9 in `run'
                     action_runner.rb:47 in `run_step'
             MSG
@@ -215,7 +218,7 @@ module Actionable
                 but a StandardError exception was raised
                   with message "something went wrong"
                   with backtrace:
-                    matchers_spec.rb:53 in `raise_always'
+                    matchers_spec.rb:56 in `raise_always'
                     method.rb:9 in `run'
                     action_runner.rb:47 in `run_step'
             MSG
@@ -232,7 +235,7 @@ module Actionable
                 but a StandardError exception was raised
                   with message "something went wrong"
                   with backtrace:
-                    matchers_spec.rb:53 in `raise_always'
+                    matchers_spec.rb:56 in `raise_always'
                     method.rb:9 in `run'
                     action_runner.rb:47 in `run_step'
             MSG
@@ -261,7 +264,7 @@ module Actionable
                 and although an exception was raised
                   the class was StandardError
                   with backtrace:
-                    matchers_spec.rb:53 in `raise_always'
+                    matchers_spec.rb:56 in `raise_always'
                     method.rb:9 in `run'
                     action_runner.rb:47 in `run_step'
             MSG
@@ -278,7 +281,7 @@ module Actionable
                 and although an exception was raised
                   the message was "something went wrong"
                   with backtrace:
-                    matchers_spec.rb:53 in `raise_always'
+                    matchers_spec.rb:56 in `raise_always'
                     method.rb:9 in `run'
                     action_runner.rb:47 in `run_step'
             MSG
@@ -296,7 +299,7 @@ module Actionable
                   the class was StandardError
                   the message was "something went wrong"
                   with backtrace:
-                    matchers_spec.rb:53 in `raise_always'
+                    matchers_spec.rb:56 in `raise_always'
                     method.rb:9 in `run'
                     action_runner.rb:47 in `run_step'
             MSG

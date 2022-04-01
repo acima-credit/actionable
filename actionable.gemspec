@@ -15,6 +15,7 @@ Gem::Specification.new do |spec|
   spec.description = 'Simple and effective Ruby service objects.'
   spec.homepage    = ''
   spec.license     = 'MIT'
+  spec.required_ruby_version = '>= 2.5.0'
 
   if spec.respond_to?(:metadata)
     spec.metadata['allowed_push_host'] = "TODO: Set to 'http://mygemserver.com'"

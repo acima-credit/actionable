@@ -2,7 +2,7 @@
 
 module TestActionable
   def self.logger
-    @logger ||= Logger.new(STDOUT).tap { |x| x.level = Logger::FATAL }
+    @logger ||= Logger.new($stdout).tap { |x| x.level = Logger::FATAL }
   end
 
   module Helpers
@@ -24,7 +24,7 @@ module TestActionable
       log_action '@number = %i', @number
     end
 
-    def fail_for_2
+    def fail_for_two
       return unless @number == 2
 
       log_action 'failing for 2 ...'
@@ -76,7 +76,7 @@ module TestActionable
 
   class GreatAction < BaseAction
     measure :all
-    step :fail_for_2
+    step :fail_for_two
     step :add_one
     step :add_two
   end
@@ -153,7 +153,7 @@ module TestActionable
 
   class FinalAction < BaseAction
     step :add_one
-    step :fail_for_2
+    step :fail_for_two
     on_success :add_two
     on_failure :add_three
     always :add_five
