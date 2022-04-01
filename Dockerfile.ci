@@ -31,4 +31,4 @@ RUN mkdir -p /app
 WORKDIR /app
 
 ADD . /app
-RUN bin/setup
+RUN bin/actionable_setup
