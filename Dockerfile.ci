@@ -1,0 +1,34 @@
+FROM ruby:2.6.3-alpine as base
+
+RUN apk update && apk upgrade && apk --no-cache add \
+  tzdata \
+  bash \
+  git \
+  build-base \
+  libstdc++ \
+  ca-certificates \
+  ruby-dev \
+  curl-dev \
+  libffi-dev \
+  linux-headers \
+  openssh \
+  file \
+  && echo ‘gem: --no-document’ > /etc/gemrc
+
+# If company gems are used
+RUN mkdir -p /root/.ssh && \
+  chmod 0700 /root/.ssh && \
+  ssh-keyscan github.com > /root/.ssh/known_hosts
+
+ARG PRIVATE
+ARG PUBLIC
+RUN echo -e "$PRIVATE" > /root/.ssh/id_rsa && \
+  echo "$PUBLIC" > /root/.ssh/id_rsa.pub && \
+  chmod 600 /root/.ssh/id_rsa && \
+  chmod 644 /root/.ssh/id_rsa.pub
+
+RUN mkdir -p /app
+WORKDIR /app
+
+ADD . /app
+RUN bin/setup
