@@ -100,10 +100,10 @@ Style/StringLiterals:
 Style/TrivialAccessors:
   Enabled: false
 
-Layout/AlignHash:
+Layout/HashAlignment:
   EnforcedColonStyle: key
 
-Style/MethodMissingSuper:
+Style/MissingSuper:
   Enabled: false
 
 Style/MissingRespondToMissing:
@@ -116,4 +116,7 @@ Style/FormatStringToken:
   Enabled: false
 
 Lint/EnsureReturn:
+  Enabled: false
+
+Lint/ConstantDefinitionInBlock:
   Enabled: false

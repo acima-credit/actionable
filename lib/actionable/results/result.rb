@@ -36,8 +36,8 @@ module Actionable
       @fixtures = indifferent_value value
     end
 
-    def respond_to?(method, _ = false)
-      (fixtures&.key?(method)) || super
+    def respond_to?(method, _: false)
+      fixtures&.key?(method) || super
     end
 
     def method_missing(method, *_, &blk)

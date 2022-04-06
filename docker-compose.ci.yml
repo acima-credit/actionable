@@ -1,0 +1,8 @@
+version: '3'
+services:
+  web:
+    image: actionable
+    command: ls
+    environment:
+      CI:                     "true"
+      RAILS_ENV:              "test"
