@@ -6,8 +6,8 @@ module Actionable
       @klass = klass
     end
 
-    def run(*args, &blk)
-      @instance = @klass.new(*args)
+    def run(*args, **kwargs, &blk)
+      @instance = @klass.new(*args, **kwargs)
 
       if @klass.model
         @instance.log_action 'running with a transaction from %s', @klass.model

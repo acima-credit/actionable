@@ -23,11 +23,11 @@ module Actionable
         new(instance).valid?
       end
 
-      def method_missing(meth, *args, &block)
+      def method_missing(meth, *args, **kwargs, &block)
         if model.respond_to?(meth)
-          model.__send__(meth, *args, &block)
+          model.__send__(meth, *args, **kwargs, &block)
         else
-          super(meth, *args, &block)
+          super(meth, *args, **kwargs, &block)
         end
       end
 

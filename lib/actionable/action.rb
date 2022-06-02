@@ -90,8 +90,8 @@ module Actionable
         Actionable.registry.add subclass
       end
 
-      def run(*args, &blk)
-        ActionRunner.new(self).run(*args, &blk)
+      def run(*args, **kwargs, &blk)
+        ActionRunner.new(self).run(*args, **kwargs, &blk)
       end
 
       alias call run
@@ -138,8 +138,8 @@ module Actionable
       false
     end
 
-    def succeed!(*args)
-      succeed(*args)
+    def succeed!(...)
+      succeed(...)
       raise SuccessError, @result.message
     end
 
@@ -154,8 +154,8 @@ module Actionable
     end
 
     # rubocop:disable Lint/UnreachableCode
-    def fail!(*args)
-      fail(*args)
+    def fail!(...)
+      fail(...)
       raise FailureError, @result.message
     end
     # rubocop:enable Lint/UnreachableCode

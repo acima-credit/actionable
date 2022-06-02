@@ -4,8 +4,8 @@ require 'actionable'
 
 module Actionable
   module RspecMatchers
-    def perform_actionable(*args)
-      PerformActionableMatcher.new(*args)
+    def perform_actionable(...)
+      PerformActionableMatcher.new(...)
     end
 
     # rubocop:disable Metrics/ClassLength
