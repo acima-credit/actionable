@@ -3,6 +3,8 @@
 module Actionable
   class Steps
     class Case < Base
+      attr_reader :cases
+
       def initialize(name, options = {}, &blk)
         super
         build_cases blk

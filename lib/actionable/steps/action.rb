@@ -3,6 +3,8 @@
 module Actionable
   class Steps
     class Action < Base
+      attr_reader :klass
+
       def initialize(klass, options = {})
         super klass.action_name, options
         @klass = klass
