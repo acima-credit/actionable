@@ -7,7 +7,10 @@ require 'actionable/version'
 
 Gem::Specification.new do |spec|
   spec.name    = 'actionable'
-  spec.version = Actionable::VERSION
+  current_branch = `git branch --remote --contains | sed "s|[[:space:]]*origin/||"`.strip
+  branch_commit = `git rev-parse HEAD`.strip[0..6]
+  current_branch == 'master' ? spec.version = Actionable::VERSION : spec.version = "#{Actionable::VERSION}-#{branch_commit}"
+
   spec.authors = ['Adrian Esteban Madrid']
   spec.email   = ['aemadrid@gmail.com']
 
@@ -18,7 +21,7 @@ Gem::Specification.new do |spec|
   spec.required_ruby_version = '>= 2.5.0'
 
   if spec.respond_to?(:metadata)
-    spec.metadata['allowed_push_host'] = "TODO: Set to 'http://mygemserver.com'"
+    spec.metadata['allowed_push_host'] = 'https://rubygems.pkg.github.com/acima-credit'
   else
     raise 'RubyGems 2.0 or newer is required to protect against public gem pushes.'
   end

@@ -8,7 +8,10 @@
 /spec/reports/
 /tmp/
 
+.idea
+*.gem
+.ruby-version
+
 # rspec failure tracking
 .rspec_status
-
 .tool-versions

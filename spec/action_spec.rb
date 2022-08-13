@@ -52,7 +52,11 @@ module Actionable
         end
         it do
           msg = nil
-          expect(Invoice).to receive(:transaction).with({}).and_call_original
+          if RUBY_VERSION[0].to_i < 3
+            expect(Invoice).to receive(:transaction).with({}).and_call_original
+          else
+            expect(Invoice).to receive(:transaction).with(no_args).and_call_original
+          end
           klass.run(number) { |x| msg = x.message }
           expect(msg).to eq 'Completed successfully.'
         end
@@ -104,7 +108,7 @@ module Actionable
               it('section') { expect(subject.history.map(&:section)).to eq(%i[main main]) }
               it('name   ') { expect(subject.history.map(&:name)).to eq(%w[test_actionable/small_action add_five]) }
               it('time   ') { expect(subject.history.map { |x| x.start_time.to_s[0, 19] }.uniq).to eq([Time.now.to_s[0, 19]]) }
-              it('took-e ') { expect(subject.history.map(&:took).all? { |x| x > 0.0 && x < 0.0002 }).to eq true }
+              it('took-e ') { expect(subject.history.map(&:took).all? { |x| x > 0.0 && x < 0.0010 }).to eq true }
               it('took   ') { expect(subject.history.took).to be > 0 }
               it('code   ') { expect(subject.history.map(&:code)).to eq(%i[success na]) }
               context 'nested' do
@@ -136,7 +140,7 @@ module Actionable
               it('section') { expect(subject.history.map(&:section)).to eq(%i[main]) }
               it('name   ') { expect(subject.history.map(&:name)).to eq(%w[test_actionable/small_action]) }
               it('time   ') { expect(subject.history.map { |x| x.start_time.to_s[0, 19] }.uniq).to eq([Time.now.to_s[0, 19]]) }
-              it('took-e ') { expect(subject.history.map(&:took).all? { |x| x > 0.0 && x < 0.0002 }).to eq true }
+              it('took-e ') { expect(subject.history.map(&:took).all? { |x| x > 0.0 && x < 0.0010 }).to eq true }
               it('took   ') { expect(subject.history.took).to be > 0 }
               it('code   ') { expect(subject.history.map(&:code)).to eq([:fail]) }
               context 'nested' do

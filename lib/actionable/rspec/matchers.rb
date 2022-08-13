@@ -4,16 +4,17 @@ require 'actionable'
 
 module Actionable
   module RspecMatchers
-    def perform_actionable(*args)
-      PerformActionableMatcher.new(*args)
+    def perform_actionable(*args, **kwargs)
+      PerformActionableMatcher.new(*args, **kwargs)
     end
 
     # rubocop:disable Metrics/ClassLength
     class PerformActionableMatcher
       attr_reader :type, :matched
 
-      def initialize(*args)
+      def initialize(*args, **kwargs)
         @args = args
+        @kwargs = kwargs
       end
 
       def and_succeed(message = Action::DEFAULT_SUCCESS_MESSAGE)
@@ -40,6 +41,7 @@ module Actionable
         return @matched unless @matched.nil?
 
         @klass = klass
+
         get_result_or_exception
 
         case @type
@@ -64,12 +66,12 @@ module Actionable
 
       private
 
-      attr_reader :klass, :args, :exception, :result
+      attr_reader :klass, :args, :kwargs, :exception, :result
 
       # rubocop:disable Lint/RescueException
       def get_result_or_exception
         @exception = nil
-        @result    = klass.run(*args)
+        @result    = klass.run(*args, **kwargs)
       rescue Exception => e
         @result    = nil
         @exception = e
