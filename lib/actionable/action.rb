@@ -90,8 +90,8 @@ module Actionable
         Actionable.registry.add subclass
       end
 
-      def run(*args, &blk)
-        ActionRunner.new(self).run(*args, &blk)
+      def run(*args, **kwargs, &blk)
+        ActionRunner.new(self).run(*args, **kwargs, &blk)
       end
 
       alias call run
