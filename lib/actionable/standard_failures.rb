@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Actionable
-  module Fail
+  module StandardFailures
     INVALID        = :invalid
     NOT_FOUND      = :not_found
     UNAUTHORIZED   = :unauthorized
