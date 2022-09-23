@@ -13,7 +13,6 @@ require 'active_support/core_ext/object/try'
 
 require 'actionable/version'
 require 'actionable/exceptions'
-require 'actionable/standard_failures'
 require 'actionable/results'
 require 'actionable/steps'
 require 'actionable/history'
