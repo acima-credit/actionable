@@ -6,8 +6,8 @@ module Actionable
       @klass = klass
     end
 
-    def run(*args, &blk)
-      @instance = @klass.new(*args)
+    def run(*args, **kwargs, &blk)
+      @instance = @klass.new(*args, **kwargs)
 
       if @klass.model
         @instance.log_action 'running with a transaction from %s', @klass.model
@@ -24,7 +24,7 @@ module Actionable
     private
 
     def run_with_transaction(&blk)
-      @klass.model.transaction(@klass.transaction_options) { run_without_transaction(&blk) }
+      @klass.model.transaction(**@klass.transaction_options) { run_without_transaction(&blk) }
     end
 
     def run_without_transaction(&blk)

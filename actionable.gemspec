@@ -6,8 +6,10 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'actionable/version'
 
 Gem::Specification.new do |spec|
-  spec.name    = 'actionable'
-  spec.version = Actionable::VERSION
+  spec.name = 'actionable'
+  current_branch = `git branch --remote --contains | sed "s|[[:space:]]*origin/||"`.strip
+  branch_commit = `git rev-parse HEAD`.strip[0..6]
+  spec.version = current_branch == 'master' ? Actionable::VERSION : "#{Actionable::VERSION}-#{branch_commit}"
   spec.authors = ['Adrian Esteban Madrid']
   spec.email   = ['aemadrid@gmail.com']
 
@@ -15,10 +17,10 @@ Gem::Specification.new do |spec|
   spec.description = 'Simple and effective Ruby service objects.'
   spec.homepage    = ''
   spec.license     = 'MIT'
-  spec.required_ruby_version = '>= 2.5.0'
+  spec.required_ruby_version = '>= 2.7.0'
 
   if spec.respond_to?(:metadata)
-    spec.metadata['allowed_push_host'] = "TODO: Set to 'http://mygemserver.com'"
+    spec.metadata['allowed_push_host'] = 'https://rubygems.pkg.github.com/acima-credit'
   else
     raise 'RubyGems 2.0 or newer is required to protect against public gem pushes.'
   end
