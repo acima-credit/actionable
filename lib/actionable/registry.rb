@@ -6,7 +6,7 @@ module Actionable
       @list = {}
     end
 
-    delegate :keys, :values, :size, :empty?, :[], to: :@list
+    delegate :keys, :values, :size, :empty?, :[], :each, to: :@list
 
     def add(action_class)
       @list[action_class.name] = action_class
