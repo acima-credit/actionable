@@ -17,6 +17,13 @@ module Actionable
       end
       it('name   ') { expect(subject.name).to eq 'number' }
       it('options') { expect(subject.options).to eq options }
+      it('cases  ') do
+        expect(subject.cases).to contain_exactly(
+          [1, an_instance_of(Actionable::Steps::Method)],
+          [/2/, an_instance_of(Actionable::Steps::Action)],
+          [[3, 4], an_instance_of(Actionable::Steps::Method)]
+        )
+      end
       context '#run' do
         let(:instance) { TestActionable::GreatAction.new number }
         context 'with a default' do

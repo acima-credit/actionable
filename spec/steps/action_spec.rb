@@ -10,6 +10,7 @@ module Actionable
       subject { described_class.new klass, options }
       it('name   ') { expect(subject.name).to eq 'test_actionable/small_action' }
       it('options') { expect(subject.options).to eq options }
+      it('klass  ') { expect(subject.klass).to eq klass }
       context '#run' do
         let(:instance) { TestActionable::GreatAction.new number }
         context 'on success' do
